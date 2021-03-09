@@ -9,6 +9,7 @@ add_custom_target(whisper_misc_files SOURCES
     variables.cmake
     macros.cmake
     version.rc.in
+    .gitignore
 )
 
 #add_definitions(-DUNICODE)

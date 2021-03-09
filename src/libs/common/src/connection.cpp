@@ -17,10 +17,30 @@ Connection::~Connection() {
 
 }
 
-void Connection::send(quint64 commandId, const QByteArray &payload) {
-    QDataStream stream(this);
-    stream.setVersion(QDataStream::Qt_5_15);
-    stream << PacketHeader::s_magic << commandId << static_cast<quint64>(payload.size()) << payload;
+void Connection::send(CommandId commandId, const Payload& payload) {
+    const auto payloadSize = payload.size();
+    PacketHeader h;
+    h.magic = PacketHeader::s_magic;
+    h.checksum = qChecksum(payload.constData(), payloadSize, PacketHeader::s_checksumType);
+    h.commandId = commandId;
+    h.version = PacketHeader::s_minimumVersion;
+
+    bool compressed = false;
+    Payload compressedPayload;
+    if (payloadSize > PacketHeader::s_compressionBias) {
+        h.flags = 1;
+        compressedPayload = qCompress(payload, PacketHeader::s_compressionLevel);
+        h.payloadSize = compressedPayload.size();
+        compressed = true;
+    } else {
+        h.flags = 0;
+        h.payloadSize = payloadSize;
+    }
+    const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
+    const auto payloadWritten = write(compressed ? compressedPayload : payload);
+
+    wDebug << socketDescriptor() << "sent packet:" << commandId
+           << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
 }
 
 void Connection::onAboutToClose() {
@@ -54,30 +74,68 @@ void Connection::onReadyRead() {
     }
 
     do {
-        if (currentPacket_.magic == 0 && static_cast<quint64>(bytesAvailable()) >= sizeof(PacketHeader::magic)) {
-            currentPacket_.magic = read(sizeof(PacketHeader::magic)).toULongLong();
-            if (currentPacket_.magic != PacketHeader::s_magic) {
-                wDebug << "wrong magic";
+        if (packetHeader_.magic == 0) {
+            const auto bytesToRead = bytesAvailable();
+            if (bytesToRead < static_cast<qint64>(sizeof(PacketHeader))) {
+                // too little data avaliable to even consider reading
+                // we expect data to remeain in socket until we will read it next time
+                // when more data will come
+                wWarn << "too little data";
+                return;
+            }
+
+            packetHeader_ = *reinterpret_cast<PacketHeader*>(read(sizeof(PacketHeader)).data());
+            if (packetHeader_.magic != PacketHeader::s_magic) {
+                wWarn << "incoming data had no correct magic";
                 close();
                 deleteLater();
                 return;
             }
-        }
-        if (currentPacket_.commandId == 0 && static_cast<quint64>(bytesAvailable()) >= sizeof(PacketHeader::commandId)) {
-            stream >> currentPacket_.commandId;
-        }
-        if (currentPacket_.size == 0 && static_cast<quint64>(bytesAvailable())>= sizeof(PacketHeader::size)) {
-            stream >> currentPacket_.size;
-        }
-        if (currentPacket_.payload.isEmpty() && static_cast<quint64>(bytesAvailable()) >= currentPacket_.size) {
-            stream >> currentPacket_.payload;
-            wDebug << currentPacket_.payload;
-            emit packetReceived(currentPacket_.commandId, currentPacket_.payload);
-            currentPacket_ = {};
-            if (bytesAvailable() > 0) {
-                emit readyRead();
+
+            if (packetHeader_.payloadSize < 0 || packetHeader_.payloadSize > PacketHeader::s_maximumPayloadSize) {
+                wWarn << "incoming data had invalid payloadSize";
+                close();
+                deleteLater();
+                return;
             }
+
+            if (packetHeader_.version < PacketHeader::s_minimumVersion) {
+                wWarn << "incoming packet version is too old to process";
+                close();
+                deleteLater();
+                return;
+            }
+            // if there will be backward compatibility packet version support we should do it here
+
+            // TODO: probably verify that command exists and could be received here
         }
+        const auto bytesToReadAfterHeader = bytesAvailable();
+
+        if (bytesToReadAfterHeader < packetHeader_.payloadSize) {
+            return;
+        }
+
+        auto payload = read(packetHeader_.payloadSize);
+
+        // m_packet.compressed = (m_packet.flags & 1) == 1; // for now 1 means compressed
+        if (packetHeader_.flags & 1) {
+            payload = qUncompress(payload);
+        }
+
+        const auto checksum = qChecksum(payload.constData(), payload.size(), PacketHeader::s_checksumType);
+
+        if (packetHeader_.checksum == checksum) {
+            wDebug << payload;
+            emit packetReceived(packetHeader_.commandId, payload);
+        } else {
+            wWarn << "checksums didn't match";
+            close();
+            deleteLater();
+            return;
+        }
+
+        packetHeader_ = {};
+
     } while (static_cast<quint64>(bytesAvailable()) > sizeof(PacketHeader::magic));
 
 

@@ -8,16 +8,24 @@
 namespace whisper {
 namespace network {
 
+using Magic = quint32;
+using Size = qint64;
+using CommandId = quint16;
+using Version = quint16;
+using Flags = quint32;
+using Checksum = quint16;
+using Payload = QByteArray;
+
 class WHISPER_COMMON_LIB Connection: public QSslSocket {
     Q_OBJECT
 public:
     explicit Connection(QObject* parent = nullptr);
     ~Connection();
 
-    virtual void send(quint64 commandId, const QByteArray& payload);
+    virtual void send(CommandId commandId, const Payload& payload);
 
 signals:
-    void packetReceived(quint64, QByteArray);
+    void packetReceived(CommandId, Payload);
 
 private slots:
     void onAboutToClose();
@@ -43,13 +51,22 @@ private slots:
     void onSslErrors(const QList<QSslError> &errors);
 
 private:
+    #pragma pack(push, 1)
     struct PacketHeader {
-        quint64 magic{ 0 };
-        quint64 commandId{ 0 };
-        quint64 size{ 0 };
-        QByteArray payload;
-        static const quint64 s_magic{ 0x4f3d3e2e9adbc };
-    } currentPacket_;
+        Magic magic{ 0 };
+        Size payloadSize{ 0 };
+        CommandId commandId{ 0 };
+        Version version{ 0 };
+        Flags flags{ 0 };
+        Checksum checksum{ 0 };
+        static constexpr Magic s_magic{ 0x4f3d3 };
+        static constexpr Size s_maximumPayloadSize{ 2 * 1024 * 1024 }; // maximum 2 megabytes for now
+        static constexpr Version s_minimumVersion{ 1 };
+        static constexpr auto s_checksumType{ Qt::ChecksumItuV41 };
+        static constexpr auto s_compressionBias{ 100 };
+        static constexpr auto s_compressionLevel{ 9 };
+    } packetHeader_;
+    #pragma pack(pop)
 };
 
 } // namespace network

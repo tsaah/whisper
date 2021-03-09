@@ -155,10 +155,10 @@ bool Mock_Connection::waitForDisconnected(int msecs) {
     return waitForDisconnected_return_;
 }
 
-void Mock_Connection::send(quint64 commandId, const QByteArray &command) {
+void Mock_Connection::send(CommandId commandId, const Payload &payload) {
     ++send_called_;
     send_commandId_ = commandId;
-    send_command_ = command;
+    send_command_ = payload;
 }
 
 void Mock_Connection::emitAboutToClose() {

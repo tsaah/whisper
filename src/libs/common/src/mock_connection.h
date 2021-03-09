@@ -47,7 +47,7 @@ public:
     bool waitForConnected(int msecs) override;
     bool waitForDisconnected(int msecs) override;
 
-    void send(quint64 commandId, const QByteArray& command) override;
+    void send(CommandId commandId, const Payload& payload) override;
 
     // signals
     void emitAboutToClose();
@@ -165,8 +165,8 @@ public:
     bool waitForDisconnected_return_{ false };
 
     int send_called_{ 0 };
-    quint64 send_commandId_{ 0 };
-    QByteArray send_command_;
+    CommandId send_commandId_{ 0 };
+    Payload send_command_;
 };
 
 } // namespace test
