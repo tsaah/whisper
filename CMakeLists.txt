@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.19)
+
+project(Whisper)
+
+include(variables.cmake)
+include(macros.cmake)
+
+add_custom_target(whisper_misc_files SOURCES
+    variables.cmake
+    macros.cmake
+    version.rc.in
+)
+
+#add_definitions(-DUNICODE)
+
+#if(PLATFORM_WINDOWS)
+#    add_definitions(-DWIN32)
+#    add_definitions(-D_WIN32)
+#endif()
+
+add_subdirectory(src)
+
