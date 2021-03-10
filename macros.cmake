@@ -41,15 +41,11 @@ macro(build_library targetName libType destinationPath)
         ${ADDITIONAL_LINK_LIBRARIES}
         ${QT_LIBS}
     )
-#    if(NOT "${SOURCES}" MATCHES ".+\.qrc.*")
-#        set_build_type_dependent(AUTOGEN_DIR agd agr)
-#    endif()
     if("${libType}" STREQUAL "SHARED")
-#        generate_target_version_file("${TARGET}.dll")
+        generate_target_version_file("${TARGET}.dll")
     endif()
     add_translations(${TARGET})
     include_directories(${INCLUDE_DIRECTORIES})
-
 
     add_library(${TARGET} ${libType}
         ${INCLUDED_HEADERS}
@@ -58,25 +54,12 @@ macro(build_library targetName libType destinationPath)
         ${ADDITIONAL_QM_FILES}
         ${ADDITIONAL_FILES}
     )
-
-    #    if("${SOURCES}" MATCHES ".+\.qrc.")
-            set_target_properties(${TARGET} PROPERTIES
-                PREFIX "${libPrefix}"
-                ARCHIVE_OUTPUT_DIRECTORY "${destinationPath}"
-                LIBRARY_OUTPUT_DIRECTORY "${destinationPath}"
-                RUNTIME_OUTPUT_DIRECTORY "${destinationPath}"
-            )
-    #    else()
-    #	set_target_properties(${TARGET} PROPERTIES
-    #            PREFIX "${libPrefix}"
-    #            ARCHIVE_OUTPUT_DIRECTORY "${destinationPath}"
-    #            LIBRARY_OUTPUT_DIRECTORY "${destinationPath}"
-    #            RUNTIME_OUTPUT_DIRECTORY "${destinationPath}"
-    #	    AUTOGEN_BUILD_DIR "${PROJECTS_ROOT}/${AUTOGEN_DIR}/${TARGET}_ag"
-    #        )
-    #    endif()
-
-
+    set_target_properties(${TARGET} PROPERTIES
+        PREFIX "${libPrefix}"
+        ARCHIVE_OUTPUT_DIRECTORY "${destinationPath}"
+        LIBRARY_OUTPUT_DIRECTORY "${destinationPath}"
+        RUNTIME_OUTPUT_DIRECTORY "${destinationPath}"
+    )
 
     target_compile_definitions(${TARGET} PRIVATE ${INCLUDED_DEFINES} ${ADDITIONAL_DEFINES})
     target_link_libraries(${TARGET} ${LINK_LIBRARIES})
@@ -107,10 +90,7 @@ macro(build_gui_application targetName)
         ${ADDITIONAL_LINK_LIBRARIES}
         ${QT_LIBS}
     )
-#    if(NOT "${SOURCES}" MATCHES ".+\.qrc.*")
-#        set_build_type_dependent(AUTOGEN_DIR agd agr)
-#    endif()
-#    generate_target_version_file("${TARGET}.exe")
+    generate_target_version_file("${TARGET}.exe")
     add_translations(${TARGET})
     include_directories(${INCLUDE_DIRECTORIES})
     add_executable(${TARGET}
@@ -120,22 +100,13 @@ macro(build_gui_application targetName)
         ${ADDITIONAL_QM_FILES}
         ${ADDITIONAL_FILES}
     )
-#    if("${SOURCES}" MATCHES ".+\.qrc.")
-        set_target_properties(${TARGET} PROPERTIES
-            WIN32_EXECUTABLE TRUE
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-        )
-#    else()
-#	set_target_properties(${TARGET} PROPERTIES
-#            WIN32_EXECUTABLE TRUE
-#            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#	     AUTOGEN_BUILD_DIR "${PROJECTS_ROOT}/${AUTOGEN_DIR}/${TARGET}_ag"
-#        )
-#    endif()
+    set_target_properties(${TARGET} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+
     target_compile_definitions(${TARGET} PRIVATE ${INCLUDED_DEFINES} ${ADDITIONAL_DEFINES})
     target_link_libraries(${TARGET} ${LINK_LIBRARIES})
     if(INCLUDED_DEPENDENCIES)
@@ -165,29 +136,17 @@ macro(build_unit_test targetName)
         ${ADDITIONAL_LINK_LIBRARIES}
         ${QT_LIBS}
     )
-#    if(NOT "${SOURCES}" MATCHES ".+\.qrc.*")
-#        set_build_type_dependent(AUTOGEN_DIR agd agr)
-#    endif()
     include_directories(${INCLUDE_DIRECTORIES})
     add_executable(${TARGET}
         ${INCLUDED_HEADERS}
         ${SOURCES}
         ${ADDITIONAL_FILES}
     )
-#    if("${SOURCES}" MATCHES ".+\.qrc.")
-        set_target_properties(${TARGET} PROPERTIES
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-        )
-#    else()
-#	set_target_properties(${TARGET} PROPERTIES
-#            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#	     AUTOGEN_BUILD_DIR "${PROJECTS_ROOT}/${AUTOGEN_DIR}/${TARGET}_ag"
-#        )
-#    endif()
+    set_target_properties(${TARGET} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
     target_compile_definitions(${TARGET} PRIVATE ${INCLUDED_DEFINES} ${ADDITIONAL_DEFINES})
     target_link_libraries(${TARGET} ${LINK_LIBRARIES})
 endmacro()
@@ -211,10 +170,7 @@ macro(build_core_application targetName)
         ${ADDITIONAL_LINK_LIBRARIES}
         ${QT_LIBS}
     )
-#    if(NOT "${SOURCES}" MATCHES ".+\.qrc.*")
-#        set_build_type_dependent(AUTOGEN_DIR agd agr)
-#    endif()
-#    generate_target_version_file("${TARGET}.exe")
+    generate_target_version_file("${TARGET}.exe")
     add_translations(${TARGET})
     include_directories(${INCLUDE_DIRECTORIES})
     add_executable(${TARGET}
@@ -224,20 +180,11 @@ macro(build_core_application targetName)
         ${ADDITIONAL_QM_FILES}
         ${ADDITIONAL_FILES}
     )
-#    if("${SOURCES}" MATCHES ".+\.qrc.")
-        set_target_properties(${TARGET} PROPERTIES
-            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-        )
-#    else()
-#	set_target_properties(${TARGET} PROPERTIES
-#            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-#	     AUTOGEN_BUILD_DIR "${PROJECTS_ROOT}/${AUTOGEN_DIR}/${TARGET}_ag"
-#        )
-#    endif()
+    set_target_properties(${TARGET} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
     target_compile_definitions(${TARGET} PRIVATE ${INCLUDED_DEFINES} ${ADDITIONAL_DEFINES})
     target_link_libraries(${TARGET} ${LINK_LIBRARIES})
     if(INCLUDED_DEPENDENCIES)
@@ -281,5 +228,16 @@ macro(make_additional_lists_unique)
     endif()
     if(ADDITIONAL_LINK_LIBRARIES)
         list(REMOVE_DUPLICATES ADDITIONAL_LINK_LIBRARIES)
+    endif()
+endmacro()
+
+macro(generate_target_version_file targetFilename)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(TARGET_FILENAME ${targetFilename})
+        configure_file(
+            ${SRCDIR}/version.rc.in
+            ${CMAKE_CURRENT_BINARY_DIR}/version.rc
+        )
+        set(ADDITIONAL_FILES ${ADDITIONAL_FILES} ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
     endif()
 endmacro()
