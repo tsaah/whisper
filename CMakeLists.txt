@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(Whisper)
+project(whisper)
 
 include(variables.cmake)
 include(macros.cmake)

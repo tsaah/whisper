@@ -1,1 +1,0 @@
-build_shared_library(common WHISPER_COMMON_LIB_EXPORT)

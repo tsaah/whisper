@@ -1,5 +1,6 @@
 #include "serverconnectionfactory.h"
-#include "../../../libs/common/src/connection.h"
+
+#include <connection.h>
 
 namespace whisper {
 namespace network {

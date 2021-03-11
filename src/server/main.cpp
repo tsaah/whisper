@@ -1,8 +1,8 @@
-#include "mock_connection.h"
-#include "connection.h"
-#include "log.h"
-#include "serverconnectionfactory.h"
-#include "server.h"
+//#include "mock_connection.h"
+#include <connection.h>
+#include <log.h>
+#include <serverconnectionfactory.h>
+#include <server.h>
 
 #include <QCoreApplication>
 #include <QTcpServer>

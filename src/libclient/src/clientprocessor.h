@@ -1,14 +1,14 @@
 #ifndef CLIENTPROCESSOR_H
 #define CLIENTPROCESSOR_H
 
-#include "client_export.h"
+#include "libclient_export.h"
 
 #include <QObject>
 
 namespace whisper {
 namespace network {
 
-class WHISPER_CLIENT_LIB ClientProcessor: public QObject {
+class WHISPER_LIBCLIENT ClientProcessor: public QObject {
     Q_OBJECT
 public:
     explicit ClientProcessor(QObject *parent = nullptr);

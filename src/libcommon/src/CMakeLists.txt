@@ -1,0 +1,1 @@
+build_shared_library(libcommon WHISPER_LIBCOMMON_EXPORT)

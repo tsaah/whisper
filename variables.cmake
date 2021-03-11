@@ -1,4 +1,3 @@
-set(libPrefix "lib")
 set(SRCDIR "${CMAKE_SOURCE_DIR}")
 
 message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
@@ -39,16 +38,19 @@ set(VERSION "${TARGET_VERSION_MAJOR}.${TARGET_VERSION_MINOR}.${TARGET_VERSION_PA
 if(GIT_BRANCH MATCHES "^release/")
     set(IS_RELEASE "release")
 else()
+    set(IS_RELEASE "not-release")
 endif()
 
 string(TIMESTAMP YEAR "%Y")
 string(TIMESTAMP CMAKE_TIMESTAMP "%d-%m-%Y %H:%M:%S")
 message("CMAKE_TIMESTAMP: ${CMAKE_TIMESTAMP}")
 
-set(TARGET_COMPANY "TsAah[THoF]")
-set(TARGET_PRODUCT "Whisper ${GIT_COMMIT_ID} ${IS_RELEASE} ${GIT_TAG_PREFIX} v.${VERSION} ${GIT_TAG_VERSION_SUFFIX} ${CMAKE_TIMESTAMP}")
+
+
+set(TARGET_COMPANY "Whisper inc")
+set(TARGET_PRODUCT "Whisper ${GIT_TAG} ${IS_RELEASE} ${CMAKE_TIMESTAMP} ${GIT_COMMIT_ID}")
 set(TARGET_DESCRIPTION "Yet another messenger.")
-set(TARGET_COPYRIGHT "©${YEAR} TsAah[THoF]")
+set(TARGET_COPYRIGHT "(c)${YEAR} Whisper inc")
 set(TARGET_VERSION_REPO "Whisper")
 set(TARGET_ICON_PATH "${SRCDIR}/whisper.ico")
 set(TARGET_VERSION_REPO "")

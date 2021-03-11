@@ -1,7 +1,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include "common_export.h"
+#include "libcommon_export.h"
 
 #include <QSslSocket>
 
@@ -16,7 +16,7 @@ using Flags = quint32;
 using Checksum = quint16;
 using Payload = QByteArray;
 
-class WHISPER_COMMON_LIB Connection: public QSslSocket {
+class WHISPER_LIBCOMMON Connection: public QSslSocket {
     Q_OBJECT
 public:
     explicit Connection(QObject* parent = nullptr);

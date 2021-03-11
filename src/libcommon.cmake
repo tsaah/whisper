@@ -1,9 +1,9 @@
 set(INCLUDED_INCLUDE_DIRECTORIES
     ${INCLUDED_INCLUDE_DIRECTORIES}
-    ${SRCDIR}/src/libs/common/src
+    ${SRCDIR}/src/libcommon/src
 )
 
 set(INCLUDED_LINK_LIBRARIES
     ${INCLUDED_LINK_LIBRARIES}
-    common
+    libcommon
 )

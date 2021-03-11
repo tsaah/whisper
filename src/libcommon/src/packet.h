@@ -1,12 +1,12 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#include "common_export.h"
+#include "libcommon_export.h"
 
 namespace whisper {
 namespace network {
 
-struct WHISPER_COMMON_LIB Packet {
+struct WHISPER_LIBCOMMON Packet {
     quint64 magic_;
     qint64 size_;
     QByteArray payload_;

@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "server_export.h"
+#include "libserver_export.h"
 
 #include <QTcpServer>
 
@@ -10,7 +10,7 @@ namespace network {
 
 class IServerConnectionFactory;
 
-class WHISPER_SERVER_LIB Server: public QTcpServer {
+class WHISPER_LIBSERVER Server: public QTcpServer {
     Q_OBJECT
 public:
     Server(IServerConnectionFactory* socketFactory, QObject* parent = nullptr);

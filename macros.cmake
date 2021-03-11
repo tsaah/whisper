@@ -17,9 +17,9 @@ macro(add_translations targetName)
 #    qt5_add_translation(QM_FILES ${XLF_FILES})
 endmacro()
 
-macro(build_shared_library targetName dllDefine)
+macro(build_shared_library targetName exportDefinition)
     file(GLOB_RECURSE SOURCES *.h *.cpp *.qrc ${ADDITIONAL_FILE_PATTERNS})
-    set(ADDITIONAL_DEFINES ${ADDITIONAL_DEFINES} "${dllDefine}")
+    set(ADDITIONAL_DEFINES ${ADDITIONAL_DEFINES} "${exportDefinition}")
     build_library(${targetName} SHARED "${CMAKE_BINARY_DIR}")
 endmacro()
 
@@ -55,7 +55,6 @@ macro(build_library targetName libType destinationPath)
         ${ADDITIONAL_FILES}
     )
     set_target_properties(${TARGET} PROPERTIES
-        PREFIX "${libPrefix}"
         ARCHIVE_OUTPUT_DIRECTORY "${destinationPath}"
         LIBRARY_OUTPUT_DIRECTORY "${destinationPath}"
         RUNTIME_OUTPUT_DIRECTORY "${destinationPath}"

@@ -7,15 +7,18 @@ PRODUCTVERSION  @TARGET_PRODUCT_VERSION_MAJOR@,@TARGET_PRODUCT_VERSION_MINOR@,@T
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        VALUE "CompanyName",        "@TARGET_COMPANY@"
-        VALUE "ProductName",        "@TARGET_PRODUCT@\0"
-        VALUE "ProductVersion",     "@TARGET_PRODUCT_VERSION_MAJOR@.@TARGET_PRODUCT_VERSION_MINOR@.@TARGET_PRODUCT_VERSION_PATCH@.@TARGET_PRODUCT_VERSION_BUILD@"
-        VALUE "FileDescription",    "@TARGET_DESCRIPTION@\0"
-        VALUE "FileVersion",        "@TARGET_VERSION_MAJOR@.@TARGET_VERSION_MINOR@.@TARGET_VERSION_PATCH@.@TARGET_VERSION_BUILD@"
-        VALUE "InternalName",       "@TARGET_PRODUCT@\0"
-        VALUE "LegalCopyright",     "@TARGET_COPYRIGHT@"
-        VALUE "OriginalFilename",   "@TARGET_FILENAME@\0"
-        VALUE "RepositoryVersion",  "@TARGET_VERSION_REPO@"
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",        "@TARGET_COMPANY@\0"
+            VALUE "ProductName",        "@TARGET_PRODUCT@\0"
+            VALUE "ProductVersion",     "@TARGET_PRODUCT_VERSION_MAJOR@.@TARGET_PRODUCT_VERSION_MINOR@.@TARGET_PRODUCT_VERSION_PATCH@.@TARGET_PRODUCT_VERSION_BUILD@\0"
+            VALUE "FileDescription",    "@TARGET_DESCRIPTION@\0"
+            VALUE "FileVersion",        "@TARGET_VERSION_MAJOR@.@TARGET_VERSION_MINOR@.@TARGET_VERSION_PATCH@.@TARGET_VERSION_BUILD@\0"
+            VALUE "InternalName",       "@TARGET_PRODUCT@\0"
+            VALUE "LegalCopyright",     "@TARGET_COPYRIGHT@\0"
+            VALUE "OriginalFilename",   "@TARGET_FILENAME@\0"
+            VALUE "RepositoryVersion",  "@TARGET_VERSION_REPO@\0"
+        END
     END
 
     BLOCK "VarFileInfo"
