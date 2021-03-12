@@ -6,7 +6,7 @@
 class QTcpSocket;
 
 namespace whisper {
-namespace network {
+namespace server {
 
 class WHISPER_LIBSERVER IServerConnectionFactory {
 public:
@@ -14,7 +14,7 @@ public:
     virtual QTcpSocket* create(qintptr handle) = 0;
 };
 
-} // namespace network
+} // namespace server
 } // namespace whisper
 
 #endif // ISERVERCONNECTIONFACTORY_H

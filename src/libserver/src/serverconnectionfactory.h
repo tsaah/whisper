@@ -5,14 +5,14 @@
 #include "iserverconnectionfactory.h"
 
 namespace whisper {
-namespace network {
+namespace server {
 
 class WHISPER_LIBSERVER ServerConnectionFactory: public IServerConnectionFactory {
 public:
     QTcpSocket* create(qintptr handle) override;
 };
 
-} // namespace network
+} // namespace server
 } // namespace whisper
 
 #endif // SERVERCONNECTIONFACTORY_H

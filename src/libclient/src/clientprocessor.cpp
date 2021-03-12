@@ -1,12 +1,12 @@
 #include "clientprocessor.h"
 
 namespace whisper {
-namespace network {
+namespace client {
 
 ClientProcessor::ClientProcessor(QObject* parent)
     : QObject(parent)
 {
 }
 
-} // namespace network
+} // namespace client
 } // namespace whisper

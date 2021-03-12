@@ -9,9 +9,9 @@
 
 #include <functional>
 
-
-
-using namespace whisper::network;
+using whisper::common::Connection;
+using whisper::server::ServerConnectionFactory;
+using whisper::server::Server;
 
 class CommandProcessor: public QObject { // consider using one per connection or in connection
     Q_OBJECT

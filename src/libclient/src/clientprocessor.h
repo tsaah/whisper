@@ -6,7 +6,7 @@
 #include <QObject>
 
 namespace whisper {
-namespace network {
+namespace client {
 
 class WHISPER_LIBCLIENT ClientProcessor: public QObject {
     Q_OBJECT
@@ -14,7 +14,7 @@ public:
     explicit ClientProcessor(QObject *parent = nullptr);
 };
 
-} // namespace network
+} // namespace client
 } // namespace whisper
 
 #endif // CLIENTPROCESSOR_H

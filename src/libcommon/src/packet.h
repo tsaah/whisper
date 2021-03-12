@@ -4,7 +4,7 @@
 #include "libcommon_export.h"
 
 namespace whisper {
-namespace network {
+namespace common {
 
 struct WHISPER_LIBCOMMON Packet {
     quint64 magic_;
@@ -12,7 +12,7 @@ struct WHISPER_LIBCOMMON Packet {
     QByteArray payload_;
 };
 
-} // namespace network
+} // namespace common
 } // namespace whisper
 
 #endif // PACKET_H

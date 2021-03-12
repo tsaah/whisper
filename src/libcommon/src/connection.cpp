@@ -5,7 +5,7 @@
 #include <QDebug>
 
 namespace whisper {
-namespace network {
+namespace common {
 
 Connection::Connection(QObject* parent)
     : QSslSocket(parent)
@@ -194,5 +194,5 @@ void Connection::onSslErrors(const QList<QSslError> &errors) {
     wDebug;
 }
 
-} // namespace network
+} // namespace common
 } // namespace whisper

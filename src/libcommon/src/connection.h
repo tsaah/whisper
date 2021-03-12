@@ -6,7 +6,7 @@
 #include <QSslSocket>
 
 namespace whisper {
-namespace network {
+namespace common {
 
 using Magic = quint32;
 using Size = qint64;
@@ -69,7 +69,7 @@ private:
     #pragma pack(pop)
 };
 
-} // namespace network
+} // namespace common
 } // namespace whisper
 
 #endif // SOCKET_H

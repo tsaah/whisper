@@ -6,7 +6,7 @@
 #include <QTcpServer>
 
 namespace whisper {
-namespace network {
+namespace server {
 
 class IServerConnectionFactory;
 
@@ -22,7 +22,7 @@ private:
     IServerConnectionFactory* socketFactory_{ nullptr };
 };
 
-} // namespace network
+} // namespace server
 } // namespace whisper
 
 #endif // SERVER_H

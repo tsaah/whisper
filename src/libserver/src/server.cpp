@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 
 namespace whisper {
-namespace network {
+namespace server {
 
 Server::Server(IServerConnectionFactory *socketFactory, QObject *parent)
     : QTcpServer(parent)
@@ -20,5 +20,5 @@ void Server::incomingConnection(qintptr handle) {
     }
 }
 
-} // namespace network
+} // namespace server
 } // namespace whisper
