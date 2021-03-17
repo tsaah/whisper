@@ -14,33 +14,15 @@ Connection::Connection(QObject* parent)
 }
 
 Connection::~Connection() {
-
+    wDebug << "connection destroyed";
 }
 
-void Connection::send(CommandId commandId, const Payload& payload) {
-    const auto payloadSize = payload.size();
-    PacketHeader h;
-    h.magic = PacketHeader::s_magic;
-    h.checksum = qChecksum(payload.constData(), payloadSize, PacketHeader::s_checksumType);
-    h.commandId = commandId;
-    h.version = PacketHeader::s_minimumVersion;
+void Connection::send(const SerializedCommand &command) {
+    send(command.id_, command.data_, false);
+}
 
-    bool compressed = false;
-    Payload compressedPayload;
-    if (payloadSize > PacketHeader::s_compressionBias) {
-        h.flags = 1;
-        compressedPayload = qCompress(payload, PacketHeader::s_compressionLevel);
-        h.payloadSize = compressedPayload.size();
-        compressed = true;
-    } else {
-        h.flags = 0;
-        h.payloadSize = payloadSize;
-    }
-    const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
-    const auto payloadWritten = write(compressed ? compressedPayload : payload);
-
-    wDebug << socketDescriptor() << "sent packet:" << commandId
-           << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
+void Connection::sendEncrypted(const EncryptedCommand &command) {
+    send(command.id_, command.data_, true);
 }
 
 void Connection::onAboutToClose() {
@@ -117,16 +99,20 @@ void Connection::onReadyRead() {
 
         auto payload = read(packetHeader_.payloadSize);
 
-        // m_packet.compressed = (m_packet.flags & 1) == 1; // for now 1 means compressed
-        if (packetHeader_.flags & 1) {
+        if ((packetHeader_.flags & 1) != 0) {
             payload = qUncompress(payload);
         }
+        const bool encrypted = (packetHeader_.flags & 2) != 0;
 
         const auto checksum = qChecksum(payload.constData(), payload.size(), PacketHeader::s_checksumType);
 
         if (packetHeader_.checksum == checksum) {
-            wDebug << payload;
-            emit packetReceived(packetHeader_.commandId, payload);
+//            wDebug << payload;
+            if (encrypted) {
+                emit encryptedCommandReceived({ packetHeader_.commandId, payload });
+            } else {
+                emit commandReceived({ packetHeader_.commandId, payload });
+            }
         } else {
             wWarn << "checksums didn't match";
             close();
@@ -137,9 +123,6 @@ void Connection::onReadyRead() {
         packetHeader_ = {};
 
     } while (static_cast<quint64>(bytesAvailable()) > sizeof(PacketHeader::magic));
-
-
-
 }
 
 void Connection::onConnected() {
@@ -192,6 +175,37 @@ void Connection::onPreSharedKeyAuthenticationRequired(QSslPreSharedKeyAuthentica
 
 void Connection::onSslErrors(const QList<QSslError> &errors) {
     wDebug;
+}
+
+void Connection::send(CommandId commandId, const QByteArray& payload, bool encrypted) {
+    const auto payloadSize = payload.size();
+    PacketHeader h;
+    h.magic = PacketHeader::s_magic;
+    h.checksum = qChecksum(payload.constData(), payloadSize, PacketHeader::s_checksumType);
+    h.commandId = commandId;
+    h.version = PacketHeader::s_minimumVersion;
+    h.flags = 0;
+
+    bool compressed = false;
+    QByteArray compressedPayload;
+    if (payloadSize > PacketHeader::s_compressionBias) {
+        h.flags &= 1;
+        compressedPayload = qCompress(payload, PacketHeader::s_compressionLevel);
+        h.payloadSize = compressedPayload.size();
+        compressed = true;
+    } else {
+        h.payloadSize = payloadSize;
+    }
+
+    if (encrypted) {
+        h.flags &= 2;
+    }
+
+    const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
+    const auto payloadWritten = write(compressed ? compressedPayload : payload);
+
+    wDebug << socketDescriptor() << "sent packet:" << commandId
+           << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
 }
 
 } // namespace common
