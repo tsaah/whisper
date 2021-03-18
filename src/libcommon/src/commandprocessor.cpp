@@ -22,7 +22,7 @@ void CommandProcessor::removeHandler(CommandId id) {
 
 void CommandProcessor::processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state) {
     if (handlers_.contains(serializedCommand.id_)) {
-        handlers_[serializedCommand.id_](connection, serializedCommand, state);
+        handlers_[serializedCommand.id_](this, connection, serializedCommand, state);
     } else {
         wDebug << "wrong command";
         connection->close();

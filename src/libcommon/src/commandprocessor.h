@@ -14,14 +14,13 @@ namespace whisper {
 namespace common {
 
 class Connection;
-//struct ConnectionState;
+class CommandProcessor;
 using ConnectionState = int;
 
-using Handler = std::function<void(Connection*, const SerializedCommand&, ConnectionState*)>;
+using Handler = std::function<void(CommandProcessor*, Connection*, const SerializedCommand&, ConnectionState*)>;
 
 class WHISPER_LIBCOMMON CommandProcessor: public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY_MOVE(CommandProcessor)
 public:
     explicit CommandProcessor(QObject* parent = nullptr);
 
