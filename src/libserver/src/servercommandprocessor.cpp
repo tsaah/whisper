@@ -61,7 +61,7 @@ SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_SOLUTION, p, c, s, d) {
-    wDebug;
+
     DESERIALIZE(cmd, CS_HANDSHAKE_SOLUTION);
     CAST_STATE(s, state);
     if (cmd.handshakeSolution == state->expectedSolution_) {
@@ -73,12 +73,15 @@ SERVER_HANDLER(CS_HANDSHAKE_SOLUTION, p, c, s, d) {
         CAST_STORAGE(d, ds);
         ds->rememberDevice(state->deviceCertificate_);
         c->send(SC_HANDSHAKE_SUCCESSFULL{});
+        wDebug << "successfull";
     } else {
         if (state->retryCount_++ > 3) { // TODO: get rid of magic numbers
             c->close();
             c->deleteLater();
+            wDebug << "failed";
         } else {
             c->send(SC_HANDSHAKE_RETRY{});
+            wDebug << "retry" << state->retryCount_;
         }
     }
 }
