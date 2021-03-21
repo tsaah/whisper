@@ -4,6 +4,7 @@
 #include "clientsqlitedatastorage.h"
 
 #include <connection.h>
+#include <crypto.h>
 
 using namespace whisper::common;
 
@@ -21,6 +22,14 @@ Controller::Controller(QObject *parent)
         processor_->processCommand(connection_, command, state_, data_);
     });
     connect(connection_, &Connection::stateChanged, this, &Controller::onConnectionStateChanged);
+
+    if (!data_->isStoredDeviceCertificateEmpty()) {
+        state_->deviceSertificate = data_->restoreDeviceCertificate();
+    } else {
+        const auto deviceCert = Crypto::generateNewDeviceCertificate();
+        state_->deviceSertificate = deviceCert;
+        data_->storeDeviceCertificate(deviceCert);
+    }
 }
 
 int Controller::connectionState() const { return connectionState_; }
@@ -43,6 +52,9 @@ void Controller::setConnectionState(int connectionState) {
 
 void Controller::onConnectionStateChanged(QAbstractSocket::SocketState state) {
     setConnectionState(static_cast<int>(state));
+    if (state == QAbstractSocket::ConnectedState) {
+        connection_->send(CS_HANDSHAKE_REQUEST{ state_->deviceSertificate, 0, 0, 1 });
+    }
 }
 
 } // namespace client

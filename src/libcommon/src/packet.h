@@ -92,9 +92,9 @@ public: \
 
 COMMAND(CS_HANDSHAKE_REQUEST)
     FIELD(QByteArray, deviceCertificate)
-    FIELD(quint64, versionBuild)
     FIELD(quint16, versionMajor)
     FIELD(quint16, versionMinor)
+    FIELD(quint64, versionBuild)
 };
 COMMAND(CS_HANDSHAKE_SOLUTION)
     FIELD(QByteArray, handshakeSolution)

@@ -16,8 +16,8 @@ Window {
 
     QtObject {
         id: defaults
-        readonly property string host: '10.0.0.128'
-//        readonly property string host: '10.0.0.20'
+//        readonly property string host: '10.0.0.128'
+        readonly property string host: '10.0.0.20'
         readonly property int port: 12345
     }
 

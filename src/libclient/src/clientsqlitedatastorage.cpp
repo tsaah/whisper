@@ -12,12 +12,43 @@ ClientSqliteDataStorage::ClientSqliteDataStorage(QObject *parent)
     initialize();
 }
 
+bool ClientSqliteDataStorage::isStoredDeviceCertificateEmpty() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1);");
+    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    ok = q.next();
+    Q_ASSERT_X(ok, __FUNCTION__, "query next");
+    return q.value(0).toInt() != 1;
+}
+
+QByteArray ClientSqliteDataStorage::restoreDeviceCertificate() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT `certificate` FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1;");
+    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    ok = q.next();
+    Q_ASSERT_X(ok, __FUNCTION__, "query next");
+    return QByteArray::fromBase64(q.value(0).toByteArray());
+}
+
+void ClientSqliteDataStorage::storeDeviceCertificate(const QByteArray &deviceCertificate) {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("INSERT OR REPLACE INTO `deviceCertificate_table` (`id`, `certificate`) VALUES (1, :cert);");
+    Q_ASSERT_X(ok, __FUNCTION__, "query preparation");
+    q.bindValue(":cert", deviceCertificate.toBase64());
+    ok = q.exec();
+    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+}
+
 QSqlDatabase ClientSqliteDataStorage::db() const {
-    if (!QSqlDatabase::contains("data_storage.sqlite")) {
-        auto db = QSqlDatabase::addDatabase("QSQLITE", "data_storage.sqlite");
-        db.setDatabaseName("data_storage.sqlite");
+    const QString dbName = "client_data_storage.sqlite";
+    if (!QSqlDatabase::contains(dbName)) {
+        auto db = QSqlDatabase::addDatabase("QSQLITE", dbName);
+        db.setDatabaseName(dbName);
     }
-    return QSqlDatabase::database("data_storage.sqlite");
+    return QSqlDatabase::database(dbName);
 }
 
 void ClientSqliteDataStorage::initialize() {
@@ -33,16 +64,18 @@ void ClientSqliteDataStorage::purge() {
 }
 
 void ClientSqliteDataStorage::createTables() {
-//    QSqlQuery q(db());
-//    const bool ok = q.exec(R"(
-//            CREATE TABLE IF NOT EXISTS `device_table` (
-//                `hash` INTEGER PRIMARY KEY UNIQUE NOT NULL,
-//                `certificate` BLOB UNIQUE NOT NULL
-//            );
-//        )");
-//    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    QSqlQuery q(db());
+    const bool ok = q.exec(R"(
+            CREATE TABLE IF NOT EXISTS `deviceCertificate_table` (
+                `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
+                `certificate` BLOB UNIQUE NOT NULL
+            );
+        )");
+    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
 }
 
 
 } // namespace client
 } // namespace whisper
+
+

@@ -34,17 +34,18 @@ void ServerSqliteDataStorage::rememberDevice(const QByteArray &deviceCert) {
     ok = q.prepare("INSERT OR REPLACE INTO `device_table` (`hash`, `certificate`) VALUES (:hash, :cert);");
     Q_ASSERT_X(ok, __FUNCTION__, "query preparation");
     q.bindValue(":hash", hash);
-    q.bindValue(":cert", deviceCert);
+    q.bindValue(":cert", deviceCert.toBase64());
     ok = q.exec();
     Q_ASSERT_X(ok, __FUNCTION__, "query exec");
 }
 
 QSqlDatabase ServerSqliteDataStorage::db() const {
-    if (!QSqlDatabase::contains("data_storage.sqlite")) {
-        auto db = QSqlDatabase::addDatabase("QSQLITE", "data_storage.sqlite");
-        db.setDatabaseName("data_storage.sqlite");
+    const QString dbName = "server_data_storage.sqlite";
+    if (!QSqlDatabase::contains(dbName)) {
+        auto db = QSqlDatabase::addDatabase("QSQLITE", dbName);
+        db.setDatabaseName(dbName);
     }
-    return QSqlDatabase::database("data_storage.sqlite");
+    return QSqlDatabase::database(dbName);
 }
 
 void ServerSqliteDataStorage::initialize() {

@@ -1,11 +1,18 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
+#include "libcommon_export.h"
+
+#include <QByteArray>
+
 namespace whisper {
 namespace common {
-namespace crypto {
 
-} // namespace crypto
+class WHISPER_LIBCOMMON Crypto {
+public:
+    static QByteArray generateNewDeviceCertificate();
+};
+
 } // namespace common
 } // namespace whisper
 

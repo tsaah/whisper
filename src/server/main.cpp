@@ -42,6 +42,8 @@ using namespace whisper::common;
 
 
 int main(int argc, char** argv) {
+    qsrand(QDateTime::currentMSecsSinceEpoch());
+
     QCoreApplication application(argc, argv);
 
     ServerConnectionFactory socketFactory;

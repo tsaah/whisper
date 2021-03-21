@@ -11,6 +11,10 @@ class WHISPER_LIBCLIENT ClientSqliteDataStorage: public IClientDataStorage {
 public:
     explicit ClientSqliteDataStorage(QObject* parent = nullptr);
 
+    bool isStoredDeviceCertificateEmpty() const override;
+    QByteArray restoreDeviceCertificate() const override;
+    void storeDeviceCertificate(const QByteArray &deviceCertificate) override;
+
 private:
     QSqlDatabase db() const;
     void initialize();
