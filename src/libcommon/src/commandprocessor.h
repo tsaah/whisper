@@ -24,10 +24,15 @@ class WHISPER_LIBCOMMON CommandProcessor: public QObject {
     Q_OBJECT
 public:
     explicit CommandProcessor(QObject* parent = nullptr);
+    virtual ~CommandProcessor() = default;
 
     void insertHandler(CommandId id, Handler handler);
     void removeHandler(CommandId id);
     void processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state, DataStorage* storage);
+    void clear();
+
+protected:
+    virtual void onWrongCommand(Connection* connection);
 
 private:
     QHash<CommandId, Handler> handlers_;

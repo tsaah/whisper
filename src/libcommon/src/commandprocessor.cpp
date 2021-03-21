@@ -25,9 +25,16 @@ void CommandProcessor::processCommand(Connection* connection, const SerializedCo
         handlers_[serializedCommand.id_](this, connection, serializedCommand, state, storage);
     } else {
         wDebug << "wrong command";
-        connection->close();
-        connection->deleteLater();
+        onWrongCommand(connection);
     }
+}
+
+void CommandProcessor::clear() {
+    handlers_.clear();
+}
+
+void CommandProcessor::onWrongCommand(Connection* connection) {
+
 }
 
 } // namespace common

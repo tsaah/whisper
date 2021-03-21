@@ -32,9 +32,12 @@ public:
 public slots:
     void connectToServer(const QString& hostName, quint16 port);
     void disconnectFromServer();
+    void sendHandshakeChallangeReply(const QString& reply);
 
 signals:
     void connectionStateChanged(int connectionState);
+    void handshakeChallenge(QString challenge);
+    void handshakeRetry();
 
 private slots:
     void setConnectionState(int connectionState);

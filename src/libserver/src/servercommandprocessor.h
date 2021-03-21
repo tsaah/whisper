@@ -14,6 +14,10 @@ class WHISPER_LIBSERVER ServerCommandProcessor: public common::CommandProcessor 
     Q_OBJECT
 public:
     ServerCommandProcessor(QObject* parent = nullptr);
+    void reset();
+
+protected:
+    void onWrongCommand(common::Connection *connection) override;
 
 private:
     DECLARE_SERVER_HANDLER(CS_HANDSHAKE_REQUEST);

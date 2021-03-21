@@ -14,11 +14,18 @@ class WHISPER_LIBCLIENT ClientCommandProcessor: public common::CommandProcessor 
     Q_OBJECT
 public:
     ClientCommandProcessor(QObject* parent = nullptr);
+    void reset();
 
 private:
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_REPLY);
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_RETRY);
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL);
+
+public:
+signals:
+    void handshakeChallenge(QString);
+    void handshakeRetry();
+
 };
 
 } // namespace client

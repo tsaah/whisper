@@ -5,6 +5,7 @@
 #include <packet.h>
 #include <connection.h>
 #include <datastorage.h>
+#include <crypto.h>
 
 namespace whisper {
 namespace server {
@@ -21,7 +22,17 @@ using namespace common;
 ServerCommandProcessor::ServerCommandProcessor(QObject *parent)
     : CommandProcessor(parent)
 {
+    reset();
+}
+
+void ServerCommandProcessor::reset() {
+    clear();
     INSERT_HANDLER(this, CS_HANDSHAKE_REQUEST); // initially we expect only handshake request
+}
+
+void ServerCommandProcessor::onWrongCommand(Connection* connection) {
+    connection->close();
+    connection->deleteLater();
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
@@ -40,8 +51,10 @@ SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
     } else { // run chllenge if not
         INSERT_HANDLER(p, CS_HANDSHAKE_SOLUTION); // expect handdhake solution next
         if (state->retryCount_ == 0) {
-            state->solutionHint_ = "it is first test entry";
-            state->expectedSolution_ = "123"; // generate  or get solution from somewhere
+            const auto cr = Crypto::generateChallengeResponse();
+            state->solutionHint_ = cr.first;
+            state->expectedSolution_ = cr.second;
+            wInfo << cr.first << ":" << cr.second;
         }
         c->send(SC_HANDSHAKE_REPLY{ state->solutionHint_ });
     }
@@ -87,3 +100,4 @@ SERVER_HANDLER(CS_INTERACTIVE_CHALLENGE_REPLY, p, c, s, d) {
 
 } // namespace server
 } // namespace whisper
+

@@ -14,7 +14,7 @@ Connection::Connection(QObject* parent)
 }
 
 Connection::~Connection() {
-    //    wDebug << "connection destroyed";
+        wDebug << "connection destroyed";
 }
 
 void Connection::send(const SerializedCommand &command) {
@@ -189,7 +189,7 @@ void Connection::send(CommandId commandId, const QByteArray& payload, bool encry
     bool compressed = false;
     QByteArray compressedPayload;
     if (payloadSize > PacketHeader::s_compressionBias) {
-        h.flags &= 1;
+        h.flags |= 1;
         compressedPayload = qCompress(payload, PacketHeader::s_compressionLevel);
         h.payloadSize = compressedPayload.size();
         compressed = true;
@@ -198,7 +198,7 @@ void Connection::send(CommandId commandId, const QByteArray& payload, bool encry
     }
 
     if (encrypted) {
-        h.flags &= 2;
+        h.flags |= 2;
     }
 
     const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));

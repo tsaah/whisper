@@ -89,7 +89,7 @@ Window {
 
                          Item {
                              id: item
-                             anchors.fill: connectionStateIndicator
+//                             anchors.fill: connectionStateIndicator
                              x: -connectionStateIndicator.width / 2 + 3
                              y: -connectionStateIndicator.height / 2 + 3
                              width: connectionStateIndicator.width
@@ -146,6 +146,51 @@ Window {
                 text: connectionButton.texts[controller.connectionState]
             }
 
+        }
+
+
+
+        ColumnLayout {
+            id: challengeBox
+            visible: doshow
+            property bool doshow: false
+            property string achallenge: ''
+            property int aretry: 0
+            Label {
+                color: 'gray'
+                text: challengeBox.achallenge
+            }
+            Label {
+                color: 'gray'
+                text: 'retry %1'.arg(challengeBox.aretry)
+            }
+            TextField {
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+                onEditingFinished: {
+                    controller.sendHandshakeChallangeReply(text)
+                    text = ''
+                }
+                RoundButton {
+                    width: 50
+                    height: 50
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.right
+                    text: 'OK'
+                }
+            }
+            Connections {
+                target: controller
+                function onHandshakeChallenge(challenge) {
+                    challengeBox.doshow = true
+                    challengeBox.achallenge = challenge
+                    challengeBox.aretry = 0
+                }
+                function onHandshakeRetry() {
+                    ++challengeBox.aretry
+                }
+            }
         }
 
         Item { Layout.fillHeight: true }

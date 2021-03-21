@@ -4,6 +4,7 @@
 #include "libcommon_export.h"
 
 #include <QByteArray>
+#include <QPair>
 
 namespace whisper {
 namespace common {
@@ -11,6 +12,7 @@ namespace common {
 class WHISPER_LIBCOMMON Crypto {
 public:
     static QByteArray generateNewDeviceCertificate();
+    static QPair<QByteArray, QByteArray> generateChallengeResponse();
 };
 
 } // namespace common
