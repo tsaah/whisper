@@ -25,6 +25,7 @@ public:
 signals:
     void handshakeChallenge(QString);
     void handshakeRetry();
+    void handshakeSuccessfull();
 
 };
 

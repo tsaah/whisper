@@ -39,7 +39,7 @@ Window {
         anchors.margins: 10
         Button {
             id: connectionButton
-            property var actions: [ 'connect', '…', '…', 'disconnect', '…', '…', '…' ]
+            property var actions: [ 'Connect', '…', '…', 'Disconnect', '…', '…', '…' ]
             property var texts: [ 'unconnected', 'host lookup', 'connecting', 'connected', 'bound', 'closing', 'listening' ]
             property var colors: [ 'red', 'blue', 'blue', 'green', 'black', 'red', 'black' ]
             Layout.fillWidth: true
@@ -190,6 +190,21 @@ Window {
                 function onHandshakeRetry() {
                     ++challengeBox.aretry
                 }
+                function onHandshakeSuccessfull() {
+                    challengeBox.doshow = false
+                    challengeBox.achallenge = ''
+                    challengeBox.aretry = 0
+                }
+            }
+        }
+
+
+        Button {
+            text: 'Change Device Certificate'
+            Layout.fillWidth: true
+            onClicked: {
+                controller.changeDeviceCertificate()
+                controller.connectToServer(defaults.host, defaults.port)
             }
         }
 

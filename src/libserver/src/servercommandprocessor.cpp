@@ -36,7 +36,6 @@ void ServerCommandProcessor::onWrongCommand(Connection* connection) {
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
-    wDebug;
     REMOVE_HANDLER(p, CS_HANDSHAKE_REQUEST); // as soon as we get handshake request remove it from handlers
     CAST_STATE(s, state);
     CAST_STORAGE(d, ds);
@@ -48,6 +47,7 @@ SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
         INSERT_HANDLER(p, CS_NEW_USER);
         INSERT_HANDLER(p, CS_OLD_USER);
         c->send(SC_HANDSHAKE_SUCCESSFULL{});
+        wDebug << "successfull";
     } else { // run chllenge if not
         INSERT_HANDLER(p, CS_HANDSHAKE_SOLUTION); // expect handdhake solution next
         if (state->retryCount_ == 0) {
@@ -61,7 +61,6 @@ SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_SOLUTION, p, c, s, d) {
-
     DESERIALIZE(cmd, CS_HANDSHAKE_SOLUTION);
     CAST_STATE(s, state);
     if (cmd.handshakeSolution == state->expectedSolution_) {

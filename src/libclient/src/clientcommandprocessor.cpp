@@ -27,13 +27,12 @@ void ClientCommandProcessor::reset() {
 }
 
 CLIENT_HANDLER(SC_HANDSHAKE_REPLY, p, c, s, d) {
-    wDebug;
     DESERIALIZE(cmd, SC_HANDSHAKE_REPLY);
     REMOVE_HANDLER(p, SC_HANDSHAKE_REPLY);
     INSERT_HANDLER(p, SC_HANDSHAKE_RETRY);
     CAST_PROCESSOR(p, proc);
     emit proc->handshakeChallenge(cmd.handshakeReply);
-//    c->send(CS_HANDSHAKE_SOLUTION{ "handshakeSolution solution" });
+    wDebug << cmd.handshakeReply;
 }
 
 CLIENT_HANDLER(SC_HANDSHAKE_RETRY, p, c, s, d) {
@@ -41,10 +40,13 @@ CLIENT_HANDLER(SC_HANDSHAKE_RETRY, p, c, s, d) {
     CAST_PROCESSOR(p, proc);
     emit proc->handshakeRetry();
 //    c->send(CS_HANDSHAKE_SOLUTION{ "123" });
+    wDebug << "wrong challenge response";
 }
 
 CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL, p, c, s, d) {
     wDebug;
+    CAST_PROCESSOR(p, proc);
+    emit proc->handshakeSuccessfull();
 }
 
 } // namespace client

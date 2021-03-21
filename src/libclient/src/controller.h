@@ -33,11 +33,13 @@ public slots:
     void connectToServer(const QString& hostName, quint16 port);
     void disconnectFromServer();
     void sendHandshakeChallangeReply(const QString& reply);
+    void changeDeviceCertificate();
 
 signals:
     void connectionStateChanged(int connectionState);
     void handshakeChallenge(QString challenge);
     void handshakeRetry();
+    void handshakeSuccessfull();
 
 private slots:
     void setConnectionState(int connectionState);

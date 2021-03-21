@@ -34,6 +34,7 @@ Controller::Controller(QObject *parent)
 
     connect(processor_, &ClientCommandProcessor::handshakeChallenge, this, &Controller::handshakeChallenge);
     connect(processor_, &ClientCommandProcessor::handshakeRetry, this, &Controller::handshakeRetry);
+    connect(processor_, &ClientCommandProcessor::handshakeSuccessfull, this, &Controller::handshakeSuccessfull);
 }
 
 int Controller::connectionState() const { return connectionState_; }
@@ -50,6 +51,13 @@ void Controller::disconnectFromServer() {
 
 void Controller::sendHandshakeChallangeReply(const QString &reply) {
     connection_->send(CS_HANDSHAKE_SOLUTION{reply.toUtf8()});
+}
+
+void Controller::changeDeviceCertificate() {
+    disconnectFromServer();
+    const auto deviceCert = Crypto::generateNewDeviceCertificate();
+    state_->deviceSertificate = deviceCert;
+    data_->storeDeviceCertificate(deviceCert);
 }
 
 void Controller::setConnectionState(int connectionState) {
