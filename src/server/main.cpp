@@ -67,17 +67,6 @@ int main(int argc, char** argv) {
         });
     });
 
-    auto* c = new Connection;
-    auto* s = new ClientConnectionState(c);
-    auto* p = new ClientCommandProcessor(c);
-    auto* d = new ClientSqliteDataStorage(c);
-    QObject::connect(c, &Connection::commandReceived, [c, s, p, d](SerializedCommand command){
-        p->processCommand(c, command, s, d);
-    });
-    c->connectToHost("127.0.0.1", 12345);
-
-    c->send(CS_HANDSHAKE_REQUEST{ "device cert", 11, 12, 13 });
-
     return application.exec();
 }
 
