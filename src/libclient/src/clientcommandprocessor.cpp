@@ -8,7 +8,7 @@ namespace client {
 
 using namespace common;
 
-#define CLIENT_HANDLER(commandId, vp, vc, cs) void ClientCommandProcessor::handle_##commandId(CommandProcessor* vp, Connection *vc, const SerializedCommand &serializedCommand, ConnectionState *cs)
+#define CLIENT_HANDLER(commandId, vp, vc, cs, ds) void ClientCommandProcessor::handle_##commandId(CommandProcessor* vp, Connection *vc, const SerializedCommand &serializedCommand, ConnectionState *cs, DataStorage* ds)
 #define DESERIALIZE(variable, commandId) const auto variable = serializedCommand.deserialize<common::commandId>()
 #define INSERT_HANDLER(processor, commandId) processor->insertHandler(common::command::commandId, &ClientCommandProcessor::handle_##commandId)
 #define REMOVE_HANDLER(processor, commandId) processor->removeHandler(common::command::commandId)
@@ -20,7 +20,7 @@ ClientCommandProcessor::ClientCommandProcessor(QObject *parent)
     INSERT_HANDLER(this, SC_HANDSHAKE_REPLY);
 }
 
-CLIENT_HANDLER(SC_HANDSHAKE_REPLY, p, c, s) {
+CLIENT_HANDLER(SC_HANDSHAKE_REPLY, p, c, s, d) {
     wDebug;
     DESERIALIZE(cmd, SC_HANDSHAKE_REPLY);
     REMOVE_HANDLER(p, SC_HANDSHAKE_REPLY);
@@ -28,12 +28,12 @@ CLIENT_HANDLER(SC_HANDSHAKE_REPLY, p, c, s) {
     c->send(CS_HANDSHAKE_SOLUTION{ "handshakeSolution solution" });
 }
 
-CLIENT_HANDLER(SC_HANDSHAKE_RETRY, p, c, s) {
+CLIENT_HANDLER(SC_HANDSHAKE_RETRY, p, c, s, d) {
     wDebug;
     c->send(CS_HANDSHAKE_SOLUTION{ "123" });
 }
 
-CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL, p, c, s) {
+CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL, p, c, s, d) {
     wDebug;
 }
 

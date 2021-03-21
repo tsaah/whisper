@@ -12,6 +12,7 @@ find_package(Qt5 COMPONENTS
     Network
     Qml
     Quick
+    Sql
 #    Quickcontrols2
     REQUIRED
 )
@@ -22,6 +23,7 @@ set(QT_LIBS
     Qt5::Network
     Qt5::Qml
     Qt5::Quick
+    Qt5::Sql
 #    Qt5::Quickcontrols2
 )
 

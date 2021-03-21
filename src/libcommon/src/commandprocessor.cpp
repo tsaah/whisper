@@ -20,9 +20,9 @@ void CommandProcessor::removeHandler(CommandId id) {
     }
 }
 
-void CommandProcessor::processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state) {
+void CommandProcessor::processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state, DataStorage* storage) {
     if (handlers_.contains(serializedCommand.id_)) {
-        handlers_[serializedCommand.id_](this, connection, serializedCommand, state);
+        handlers_[serializedCommand.id_](this, connection, serializedCommand, state, storage);
     } else {
         wDebug << "wrong command";
         connection->close();
@@ -33,5 +33,5 @@ void CommandProcessor::processCommand(Connection* connection, const SerializedCo
 } // namespace common
 } // namespace whisper
 
-#define ADD_COMMAND_HANDLER(commandId) insertHandler(command::commandId, [](Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state)
+#define ADD_COMMAND_HANDLER(commandId) insertHandler(command::commandId, [](Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state, DataStorage* storage)
 #define DESERIALIZE_COMMAND(commandId, variableName) const auto variableName = serializedCommand.deserialize<commandId>();

@@ -8,7 +8,7 @@
 namespace whisper {
 namespace server {
 
-#define DECLARE_SERVER_HANDLER(commandId) static void handle_##commandId(common::CommandProcessor* processor, common::Connection* connection, const common::SerializedCommand& serializedCommand, common::ConnectionState* state)
+#define DECLARE_SERVER_HANDLER(commandId) static void handle_##commandId(common::CommandProcessor* processor, common::Connection* connection, const common::SerializedCommand& serializedCommand, common::ConnectionState* state, common::DataStorage* storage)
 
 class WHISPER_LIBSERVER ServerCommandProcessor: public common::CommandProcessor {
     Q_OBJECT

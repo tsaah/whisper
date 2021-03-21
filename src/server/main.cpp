@@ -9,28 +9,37 @@
 #include <clientcommandprocessor.h>
 #include <serverconnectionstate.h>
 #include <clientconnectionstate.h>
+#include <datastorage.h>
+#include <serversqlitedatastorage.h>
+#include <clientsqlitedatastorage.h>
 
 #include <QCoreApplication>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QVariant>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 using whisper::common::Connection;
 using whisper::common::CommandProcessor;
+using whisper::common::DataStorage;
 
 using whisper::server::Server;
 using whisper::server::ServerConnectionFactory;
 using whisper::server::ServerCommandProcessor;
 using whisper::server::ServerConnectionState;
+using whisper::server::ServerSqliteDataStorage;
 
 using whisper::client::ClientCommandProcessor;
 using whisper::client::ClientConnectionState;
+using whisper::client::ClientSqliteDataStorage;
 
 using namespace whisper::common;
 
-class IDataStorage {
-public:
-    virtual ~IDataStorage() = default;
 
-    virtual bool isDeviceKnown(const QByteArray& deviceCert) const = 0;
-};
 
 int main(int argc, char** argv) {
     QCoreApplication application(argc, argv);
@@ -49,16 +58,18 @@ int main(int argc, char** argv) {
         auto* connection = reinterpret_cast<Connection*>(server->nextPendingConnection());
         auto* s = new ServerConnectionState(connection);
         auto* p = new ServerCommandProcessor(connection);
-        QObject::connect(connection, &Connection::commandReceived, [connection, s, p](SerializedCommand command){
-            p->processCommand(connection, command, s);
+        auto* d = new ServerSqliteDataStorage(connection);
+        QObject::connect(connection, &Connection::commandReceived, [connection, s, p, d](SerializedCommand command){
+            p->processCommand(connection, command, s, d);
         });
     });
 
     auto* c = new Connection;
     auto* s = new ClientConnectionState(c);
     auto* p = new ClientCommandProcessor(c);
-    QObject::connect(c, &Connection::commandReceived, [c, s, p](SerializedCommand command){
-        p->processCommand(c, command, s);
+    auto* d = new ClientSqliteDataStorage(c);
+    QObject::connect(c, &Connection::commandReceived, [c, s, p, d](SerializedCommand command){
+        p->processCommand(c, command, s, d);
     });
     c->connectToHost("127.0.0.1", 12345);
 

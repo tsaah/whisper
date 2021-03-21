@@ -8,7 +8,7 @@
 namespace whisper {
 namespace client {
 
-#define DECLARE_CLIENT_HANDLER(commandId) static void handle_##commandId(common::CommandProcessor* processor, common::Connection* connection, const common::SerializedCommand& serializedCommand, common::ConnectionState* state)
+#define DECLARE_CLIENT_HANDLER(commandId) static void handle_##commandId(common::CommandProcessor* processor, common::Connection* connection, const common::SerializedCommand& serializedCommand, common::ConnectionState* state, common::DataStorage* storage)
 
 class WHISPER_LIBCLIENT ClientCommandProcessor: public common::CommandProcessor {
     Q_OBJECT

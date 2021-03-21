@@ -16,8 +16,9 @@ namespace common {
 
 class Connection;
 class CommandProcessor;
+class DataStorage;
 
-using Handler = std::function<void(CommandProcessor*, Connection*, const SerializedCommand&, ConnectionState*)>;
+using Handler = std::function<void(CommandProcessor*, Connection*, const SerializedCommand&, ConnectionState*, DataStorage*)>;
 
 class WHISPER_LIBCOMMON CommandProcessor: public QObject {
     Q_OBJECT
@@ -26,7 +27,7 @@ public:
 
     void insertHandler(CommandId id, Handler handler);
     void removeHandler(CommandId id);
-    void processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state);
+    void processCommand(Connection* connection, const SerializedCommand& serializedCommand, ConnectionState* state, DataStorage* storage);
 
 private:
     QHash<CommandId, Handler> handlers_;
