@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
 
     wDebug << "listening";
     QObject::connect(server, &Server::newConnection, [server]{
+        wDebug << "new connection";
         auto* connection = reinterpret_cast<Connection*>(server->nextPendingConnection());
         auto* s = new ServerConnectionState(connection);
         auto* p = new ServerCommandProcessor(connection);

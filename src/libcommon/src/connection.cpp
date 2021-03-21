@@ -14,7 +14,11 @@ Connection::Connection(QObject* parent)
 }
 
 Connection::~Connection() {
-//    wDebug << "connection destroyed";
+    //    wDebug << "connection destroyed";
+}
+
+void Connection::connectToServer(const QString &hostName, quint16 port) {
+    connectToHost(hostName, port);
 }
 
 void Connection::send(const SerializedCommand &command) {

@@ -30,7 +30,7 @@ SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s, d) {
     CAST_STATE(s, state);
     CAST_STORAGE(d, ds);
     DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
-    state->deviceCertificate_ = cmd.deviceCertificate_;
+    state->deviceCertificate_ = cmd.deviceCertificate;
 
     // check that device certificate is correct
     if (ds->isDeviceKnown(state->deviceCertificate_)) {
@@ -51,7 +51,7 @@ SERVER_HANDLER(CS_HANDSHAKE_SOLUTION, p, c, s, d) {
     wDebug;
     DESERIALIZE(cmd, CS_HANDSHAKE_SOLUTION);
     CAST_STATE(s, state);
-    if (cmd.handshakeSolution_ == state->expectedSolution_) {
+    if (cmd.handshakeSolution == state->expectedSolution_) {
         state->handshakeSuccessfull_ = true;
         REMOVE_HANDLER(p, CS_HANDSHAKE_SOLUTION);
         INSERT_HANDLER(p, CS_NEW_USER);

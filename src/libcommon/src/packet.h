@@ -82,11 +82,11 @@ public: \
 
 
 
-#define FIELD(memberType, memberName) Q_PROPERTY(memberType memberName##_ READ get_##memberName WRITE set_##memberName) \
+#define FIELD(memberType, memberName) Q_PROPERTY(memberType memberName READ get_##memberName WRITE set_##memberName) \
 public: \
-    memberType memberName##_; \
-    memberType get_##memberName() const { return memberName##_; } \
-    void set_##memberName(memberType v) { memberName##_ = v; } \
+    memberType memberName; \
+    memberType get_##memberName() const { return memberName; } \
+    void set_##memberName(memberType v) { memberName = v; } \
 
 
 
