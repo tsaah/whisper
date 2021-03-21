@@ -16,18 +16,25 @@ using namespace common;
 ClientCommandProcessor::ClientCommandProcessor(QObject *parent)
     : CommandProcessor(parent)
 {
+    INSERT_HANDLER(this, SC_HANDSHAKE_SUCCESSFULL);
     INSERT_HANDLER(this, SC_HANDSHAKE_REPLY);
-    INSERT_HANDLER(this, SC_RETRY);
 }
 
 CLIENT_HANDLER(SC_HANDSHAKE_REPLY, p, c, s) {
+    wDebug;
     DESERIALIZE(cmd, SC_HANDSHAKE_REPLY);
-    wDebug << cmd.handshakeReply_;
+    REMOVE_HANDLER(p, SC_HANDSHAKE_REPLY);
+    INSERT_HANDLER(p, SC_HANDSHAKE_RETRY);
     c->send(CS_HANDSHAKE_SOLUTION{ "handshakeSolution solution" });
 }
 
-CLIENT_HANDLER(SC_RETRY, p, c, s) {
-    DESERIALIZE(cmd, SC_RETRY);
+CLIENT_HANDLER(SC_HANDSHAKE_RETRY, p, c, s) {
+    wDebug;
+    c->send(CS_HANDSHAKE_SOLUTION{ "123" });
+}
+
+CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL, p, c, s) {
+    wDebug;
 }
 
 } // namespace client

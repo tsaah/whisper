@@ -14,7 +14,7 @@ Connection::Connection(QObject* parent)
 }
 
 Connection::~Connection() {
-    wDebug << "connection destroyed";
+//    wDebug << "connection destroyed";
 }
 
 void Connection::send(const SerializedCommand &command) {
@@ -46,7 +46,7 @@ void Connection::onReadChannelFinished() {
 }
 
 void Connection::onReadyRead() {
-    wDebug << socketDescriptor();
+//    wDebug << socketDescriptor();
 
     if (bytesAvailable() <= 0) {
         wDebug << "some faulty shit is happening";
@@ -204,8 +204,7 @@ void Connection::send(CommandId commandId, const QByteArray& payload, bool encry
     const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
     const auto payloadWritten = write(compressed ? compressedPayload : payload);
 
-    wDebug << socketDescriptor() << "sent packet:" << commandId
-           << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
+//    wDebug << socketDescriptor() << "sent packet:" << commandId << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
 }
 
 } // namespace common

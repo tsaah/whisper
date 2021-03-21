@@ -7,19 +7,30 @@
 #include <commandprocessor.h>
 #include <servercommandprocessor.h>
 #include <clientcommandprocessor.h>
+#include <serverconnectionstate.h>
+#include <clientconnectionstate.h>
 
 #include <QCoreApplication>
-#include <QTcpServer>
-
-#include <functional>
 
 using whisper::common::Connection;
 using whisper::common::CommandProcessor;
-using whisper::server::ServerConnectionFactory;
+
 using whisper::server::Server;
+using whisper::server::ServerConnectionFactory;
 using whisper::server::ServerCommandProcessor;
+using whisper::server::ServerConnectionState;
+
 using whisper::client::ClientCommandProcessor;
+using whisper::client::ClientConnectionState;
+
 using namespace whisper::common;
+
+class IDataStorage {
+public:
+    virtual ~IDataStorage() = default;
+
+    virtual bool isDeviceKnown(const QByteArray& deviceCert) const = 0;
+};
 
 int main(int argc, char** argv) {
     QCoreApplication application(argc, argv);
@@ -36,16 +47,18 @@ int main(int argc, char** argv) {
     wDebug << "listening";
     QObject::connect(server, &Server::newConnection, [server]{
         auto* connection = reinterpret_cast<Connection*>(server->nextPendingConnection());
-        QObject::connect(connection, &Connection::commandReceived, [connection](SerializedCommand command){
-            auto* p = new ServerCommandProcessor(connection);
-            p->processCommand(connection, command, nullptr);
+        auto* s = new ServerConnectionState(connection);
+        auto* p = new ServerCommandProcessor(connection);
+        QObject::connect(connection, &Connection::commandReceived, [connection, s, p](SerializedCommand command){
+            p->processCommand(connection, command, s);
         });
     });
 
     auto* c = new Connection;
-    QObject::connect(c, &Connection::commandReceived, [c](SerializedCommand command){
-        auto* p = new ClientCommandProcessor(c);
-        p->processCommand(c, command, nullptr);
+    auto* s = new ClientConnectionState(c);
+    auto* p = new ClientCommandProcessor(c);
+    QObject::connect(c, &Connection::commandReceived, [c, s, p](SerializedCommand command){
+        p->processCommand(c, command, s);
     });
     c->connectToHost("127.0.0.1", 12345);
 

@@ -1,4 +1,5 @@
 #include "servercommandprocessor.h"
+#include "serverconnectionstate.h"
 
 #include <packet.h>
 #include <connection.h>
@@ -12,6 +13,7 @@ using namespace common;
 #define DESERIALIZE(variable, commandId) const auto variable = serializedCommand.deserialize<common::commandId>()
 #define INSERT_HANDLER(processor, commandId) processor->insertHandler(common::command::commandId, &ServerCommandProcessor::handle_##commandId)
 #define REMOVE_HANDLER(processor, commandId) processor->removeHandler(common::command::commandId)
+#define CAST_STATE(from, to) auto* to = reinterpret_cast<ServerConnectionState*>(from)
 
 ServerCommandProcessor::ServerCommandProcessor(QObject *parent)
     : CommandProcessor(parent)
@@ -20,30 +22,61 @@ ServerCommandProcessor::ServerCommandProcessor(QObject *parent)
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_REQUEST, p, c, s) {
+    wDebug;
     REMOVE_HANDLER(p, CS_HANDSHAKE_REQUEST); // as soon as we get handshake request remove it from handlers
-    INSERT_HANDLER(p, CS_HANDSHAKE_SOLUTION); // expect handdhake solution next
-    // state should store retry count
-    // if retry count is 0 then state should store an expected solution
+    CAST_STATE(s, state);
     DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
-    // check and store device certificate related to current connection
-    wDebug << cmd.deviceCertificate_ << cmd.versionMajor_ << cmd.versionMinor_ << cmd.versionBuild_;
-    c->send(SC_HANDSHAKE_REPLY{ "handshakeReply solution hint" });
+    state->deviceCertificate_ = cmd.deviceCertificate_;
+    // check that device certificate is correct
+    // and check if device certificate is known
+    if (true) {
+        INSERT_HANDLER(p, CS_NEW_USER);
+        INSERT_HANDLER(p, CS_OLD_USER);
+        c->send(SC_HANDSHAKE_SUCCESSFULL{});
+    } else { // run chllenge if not
+        INSERT_HANDLER(p, CS_HANDSHAKE_SOLUTION); // expect handdhake solution next
+        if (state->retryCount_ == 0) {
+            state->solutionHint_ = "it is first test entry";
+            state->expectedSolution_ = "123"; // generate  or get solution from somewhere
+        }
+        c->send(SC_HANDSHAKE_REPLY{ state->solutionHint_ });
+    }
 }
 
 SERVER_HANDLER(CS_HANDSHAKE_SOLUTION, p, c, s) {
-    DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
+    wDebug;
+    DESERIALIZE(cmd, CS_HANDSHAKE_SOLUTION);
+    CAST_STATE(s, state);
+    if (cmd.handshakeSolution_ == state->expectedSolution_) {
+        state->handshakeSuccessfull_ = true;
+        REMOVE_HANDLER(p, CS_HANDSHAKE_SOLUTION);
+        INSERT_HANDLER(p, CS_NEW_USER);
+        INSERT_HANDLER(p, CS_OLD_USER);
+        INSERT_HANDLER(p, CS_INTERACTIVE_CHALLENGE_REPLY);
+        c->send(SC_HANDSHAKE_SUCCESSFULL{});
+    } else {
+        if (state->retryCount_++ > 3) { // TODO: get rid of magic numbers
+            c->close();
+            c->deleteLater();
+        } else {
+            c->send(SC_HANDSHAKE_RETRY{});
+        }
+    }
 }
 
 SERVER_HANDLER(CS_NEW_USER, p, c, s) {
-    DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
+    wDebug;
+    DESERIALIZE(cmd, CS_NEW_USER);
 }
 
 SERVER_HANDLER(CS_OLD_USER, p, c, s) {
-    DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
+    wDebug;
+    DESERIALIZE(cmd, CS_OLD_USER);
 }
 
 SERVER_HANDLER(CS_INTERACTIVE_CHALLENGE_REPLY, p, c, s) {
-    DESERIALIZE(cmd, CS_HANDSHAKE_REQUEST);
+    wDebug;
+    DESERIALIZE(cmd, CS_INTERACTIVE_CHALLENGE_REPLY);
 }
 
 } // namespace server

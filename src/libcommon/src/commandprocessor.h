@@ -3,6 +3,7 @@
 
 #include "packet.h"
 #include "types.h"
+#include "connectionstate.h"
 
 #include <QByteArray>
 #include <QHash>
@@ -15,7 +16,6 @@ namespace common {
 
 class Connection;
 class CommandProcessor;
-using ConnectionState = int;
 
 using Handler = std::function<void(CommandProcessor*, Connection*, const SerializedCommand&, ConnectionState*)>;
 
