@@ -14,6 +14,14 @@ Window {
     color: '#000'
     property var currentUserId
 
+    QtObject {
+        id: defaults
+        readonly property string host: '10.0.0.128'
+//        readonly property string host: '10.0.0.20'
+        readonly property int port: 12345
+    }
+
+
     Material.theme: Material.Dark
     Material.primary: '#3a3846' // Material.Purple
     Material.accent: '#24f4b9'
@@ -21,8 +29,9 @@ Window {
     Material.foreground: '#fff'
 
 
+
     Component.onCompleted: {
-        controller.connectToServer('127.0.0.1', 12345)
+        controller.connectToServer(defaults.host, defaults.port)
     }
 
     ColumnLayout {
@@ -37,7 +46,7 @@ Window {
             enabled: controller.connectionState == 0 || controller.connectionState == 3
             text: connectionButton.actions[controller.connectionState]
             onClicked: if (controller.connectionState == 0) {
-                           controller.connectToServer('127.0.0.1', 12345)
+                           controller.connectToServer(defaults.host, defaults.port)
                        } else if (controller.connectionState == 3) {
                            controller.disconnectFromServer()
                        }

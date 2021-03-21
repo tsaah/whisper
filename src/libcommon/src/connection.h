@@ -17,9 +17,8 @@ public:
     ~Connection() override;
 
 public slots:
-    virtual void connectToServer(const QString& hostName, quint16 port);
-    virtual void send(const SerializedCommand& command);
-    virtual void sendEncrypted(const EncryptedCommand& command);
+    void send(const SerializedCommand& command);
+    void sendEncrypted(const EncryptedCommand& command);
 
 signals:
     void commandReceived(SerializedCommand);
