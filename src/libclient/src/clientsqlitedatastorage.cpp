@@ -1,6 +1,7 @@
 #include "clientsqlitedatastorage.h"
 
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QVariant>
 
 namespace whisper {
@@ -16,9 +17,9 @@ bool ClientSqliteDataStorage::isStoredDeviceCertificateEmpty() const {
     QSqlQuery q(db());
     bool ok = false;
     ok = q.exec("SELECT EXISTS(SELECT 1 FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1);");
-    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    SQLASSERT(ok, "query exec");
     ok = q.next();
-    Q_ASSERT_X(ok, __FUNCTION__, "query next");
+    SQLASSERT(ok, "query next");
     return q.value(0).toInt() != 1;
 }
 
@@ -26,20 +27,116 @@ QByteArray ClientSqliteDataStorage::restoreDeviceCertificate() const {
     QSqlQuery q(db());
     bool ok = false;
     ok = q.exec("SELECT `certificate` FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1;");
-    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    SQLASSERT(ok, "query exec");
     ok = q.next();
-    Q_ASSERT_X(ok, __FUNCTION__, "query next");
-    return QByteArray::fromBase64(q.value(0).toByteArray());
+    if (ok) {
+        return q.value(0).toByteArray();
+    } else {
+        return {};
+    }
 }
 
 void ClientSqliteDataStorage::storeDeviceCertificate(const QByteArray &deviceCertificate) {
     QSqlQuery q(db());
     bool ok = false;
     ok = q.prepare("INSERT OR REPLACE INTO `deviceCertificate_table` (`id`, `certificate`) VALUES (1, :cert);");
-    Q_ASSERT_X(ok, __FUNCTION__, "query preparation");
-    q.bindValue(":cert", deviceCertificate.toBase64());
+    SQLASSERT(ok, "query preparation");
+    q.bindValue(":cert", deviceCertificate);
     ok = q.exec();
-    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    SQLASSERT(ok, "query exec");
+}
+
+void ClientSqliteDataStorage::clearDeviceCertificate() {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("DELETE FROM `deviceCertificate_table` WHERE `id` = 1;");
+    SQLASSERT(ok, "query preparation");
+    ok = q.exec();
+    SQLASSERT(ok, "query exec");
+}
+
+bool ClientSqliteDataStorage::isStoredUserCertificateEmpty() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `userCertificate_table` WHERE `id` = 1 LIMIT 1);");
+    SQLASSERT(ok, "query exec");
+    ok = q.next();
+    SQLASSERT(ok, "query next");
+    return q.value(0).toInt() != 1;
+}
+
+QByteArray ClientSqliteDataStorage::restoreUserCertificate() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT `certificate` FROM `userCertificate_table` WHERE `id` = 1 LIMIT 1;");
+    SQLASSERT(ok, "query exec");
+    ok = q.next();
+    if (ok) {
+        return q.value(0).toByteArray();
+    } else {
+        return {};
+    }
+}
+
+void ClientSqliteDataStorage::storeUserCertificate(const QByteArray &userCertificate) {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("INSERT OR REPLACE INTO `userCertificate_table` (`id`, `certificate`) VALUES (1, :cert);");
+    SQLASSERT(ok, "query preparation");
+    q.bindValue(":cert", userCertificate);
+    ok = q.exec();
+    SQLASSERT(ok, "query exec");
+}
+
+void ClientSqliteDataStorage::clearUserCertificate() {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("DELETE FROM `userCertificate_table` WHERE `id` = 1;");
+    SQLASSERT(ok, "query preparation");
+    ok = q.exec();
+    SQLASSERT(ok, "query exec");
+}
+
+bool ClientSqliteDataStorage::isStoredUserIdEmpty() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `userId_table` WHERE `id` = 1 LIMIT 1);");
+    SQLASSERT(ok, "query exec");
+    ok = q.next();
+    SQLASSERT(ok, "query next");
+    return q.value(0).toInt() != 1;
+}
+
+quint64 ClientSqliteDataStorage::restoreUserId() const {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.exec("SELECT `userId` FROM `userId_table` WHERE `id` = 1 LIMIT 1;");
+    SQLASSERT(ok, "query exec");
+    ok = q.next();
+    if (ok) {
+        return q.value(0).toULongLong();
+    } else {
+        return 0;
+    }
+}
+
+void ClientSqliteDataStorage::storeUserId(quint64 userId) {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("INSERT OR REPLACE INTO `userId_table` (`id`, `userId`) VALUES (1, :userId);");
+    SQLASSERT(ok, "query preparation");
+    q.bindValue(":userId", userId);
+    ok = q.exec();
+    SQLASSERT(ok, "query exec");
+}
+
+void ClientSqliteDataStorage::clearUserId() {
+    QSqlQuery q(db());
+    bool ok = false;
+    ok = q.prepare("DELETE FROM `userId_table` WHERE `id` = 1;");
+    SQLASSERT(ok, "query preparation");
+    ok = q.exec();
+    SQLASSERT(ok, "query exec");
 }
 
 QSqlDatabase ClientSqliteDataStorage::db() const {
@@ -65,17 +162,32 @@ void ClientSqliteDataStorage::purge() {
 
 void ClientSqliteDataStorage::createTables() {
     QSqlQuery q(db());
-    const bool ok = q.exec(R"(
-            CREATE TABLE IF NOT EXISTS `deviceCertificate_table` (
-                `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
-                `certificate` BLOB UNIQUE NOT NULL
-            );
-        )");
-    Q_ASSERT_X(ok, __FUNCTION__, "query exec");
+    bool ok = false;
+    ok = q.exec(R"(
+        CREATE TABLE IF NOT EXISTS `deviceCertificate_table` (
+            `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
+            `certificate` BLOB UNIQUE NOT NULL
+        );
+    )");
+    SQLASSERT(ok, "query exec");
+
+    ok = q.exec(R"(
+        CREATE TABLE IF NOT EXISTS `userCertificate_table` (
+            `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
+            `certificate` BLOB UNIQUE NOT NULL
+        );
+    )");
+    SQLASSERT(ok, "query exec");
+
+    ok = q.exec(R"(
+        CREATE TABLE IF NOT EXISTS `userId_table` (
+            `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
+            `userId` INT UNIQUE NOT NULL
+        );
+    )");
+    SQLASSERT(ok, "query exec");
 }
 
 
 } // namespace client
 } // namespace whisper
-
-

@@ -16,9 +16,29 @@ Window {
 
     QtObject {
         id: defaults
-//        readonly property string host: '10.0.0.128'
-        readonly property string host: '10.0.0.20'
+        readonly property string host: '10.0.0.128'
+//        readonly property string host: '10.0.0.20'
         readonly property int port: 12345
+    }
+    QtObject {
+        id: state
+    }
+
+    Connections {
+        target: controller
+        function onHandshakeChallenge(challenge) {
+            challengeBox.doshow = true
+            challengeBox.achallenge = challenge
+            challengeBox.aretry = 0
+        }
+        function onHandshakeRetry() {
+            ++challengeBox.aretry
+        }
+        function onHandshakeSuccessfull() {
+            challengeBox.doshow = false
+            challengeBox.achallenge = ''
+            challengeBox.aretry = 0
+        }
     }
 
 
@@ -66,8 +86,8 @@ Window {
                     z: 10
                     color: connectionButton.colors[controller.connectionState]
                     radius: 10
-                    border.width: 1
-                    border.color: '#00000080'
+//                    border.width: 1
+//                    border.color: '#00000080'
                     opacity: controller.connectionState === 2 ? 0 : 1
                     Behavior on opacity {
                         OpacityAnimator {
@@ -80,6 +100,11 @@ Window {
                     anchors.fill: parent
 
                     opacity: controller.connectionState === 2 ? 1 : 0
+                    Behavior on opacity {
+                        OpacityAnimator {
+                            duration: 250
+                        }
+                    }
                     running: true
                     contentItem: Item {
                          implicitWidth: connectionStateIndicator.width
@@ -113,14 +138,14 @@ Window {
 
                              Repeater {
                                  id: repeater
-                                 model: 3
+                                 model: 5
 
                                  Rectangle {
                                      x: item.width / 2 + width / 2
                                      y: item.height / 2 + height / 2
-                                     width: 6
-                                     height: 6
-                                     radius: 3
+                                     width: 4
+                                     height: 4
+                                     radius: 2
                                      color: "#214efb"
                                      transform: [
                                          Translate {
@@ -128,8 +153,8 @@ Window {
                                          },
                                          Rotation {
                                              angle: index / repeater.count * 360
-                                             origin.x: -3
-                                             origin.y: -3
+                                             origin.x: -2
+                                             origin.y: -2
                                          }
                                      ]
                                  }
@@ -148,7 +173,17 @@ Window {
 
         }
 
-
+        Rectangle {
+            Layout.fillWidth: true
+            color: 'yellow'
+            radius: 4
+            height: 50
+            Label {
+                color: controller.authorized ? 'geen' : 'red'
+                text: controller.userId
+                font.pixelSize: 30
+            }
+        }
 
         ColumnLayout {
             id: challengeBox
@@ -180,22 +215,7 @@ Window {
                     text: 'OK'
                 }
             }
-            Connections {
-                target: controller
-                function onHandshakeChallenge(challenge) {
-                    challengeBox.doshow = true
-                    challengeBox.achallenge = challenge
-                    challengeBox.aretry = 0
-                }
-                function onHandshakeRetry() {
-                    ++challengeBox.aretry
-                }
-                function onHandshakeSuccessfull() {
-                    challengeBox.doshow = false
-                    challengeBox.achallenge = ''
-                    challengeBox.aretry = 0
-                }
-            }
+
         }
 
 
@@ -205,6 +225,57 @@ Window {
             onClicked: {
                 controller.changeDeviceCertificate()
                 controller.connectToServer(defaults.host, defaults.port)
+            }
+        }
+        ColumnLayout {
+            Layout.fillWidth: true
+
+            Dialog {
+                id: newUserDialog
+                ColumnLayout {
+                    anchors.fill: parent
+                    Label {
+                        text: 'Enter a password'
+                        Layout.fillWidth: true
+                    }
+                    TextField {
+                        id: p1
+                        Layout.fillWidth: true
+                    }
+                    TextField {
+                        id: p2
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: 'Commit'
+                        Layout.fillWidth: true
+                        onClicked: {
+                            if (p1.text !== p2.text) {
+                                p1.text = ''
+                                p2.text = ''
+                                console.log('parsswords don\'t match')
+                            } else {
+                                if (p1.text.length < 3) {
+                                    console.log('parsswords should be 3 symbols or more')
+                                } else {
+                                    controller.createNewUser(p1.text)
+                                    newUserDialog.accept()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Button {
+                text: 'Create new user'
+                Layout.fillWidth: true
+                onClicked: newUserDialog.open()
+            }
+
+            Button {
+                text: 'Enter as old user'
+                Layout.fillWidth: true
             }
         }
 

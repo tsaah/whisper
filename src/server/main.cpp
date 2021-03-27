@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
     QObject::connect(server, &Server::newConnection, [server]{
         wDebug << "new connection";
         auto* connection = reinterpret_cast<Connection*>(server->nextPendingConnection());
+        connection->startKillTimer(1min);
         auto* s = new ServerConnectionState(connection);
         auto* p = new ServerCommandProcessor(connection);
         auto* d = new ServerSqliteDataStorage(connection);

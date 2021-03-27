@@ -18,4 +18,6 @@ public:
 } // namespace common
 } // namespace whisper
 
+#define SQLASSERT(statement, what) Q_ASSERT_X((statement), __FUNCTION__, QString("SQL Error %1: %2").arg(what).arg(q.lastError().text()).toUtf8());
+
 #endif // DATASTORAGE_H

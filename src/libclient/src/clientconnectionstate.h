@@ -13,7 +13,11 @@ class WHISPER_LIBCLIENT ClientConnectionState: public common::ConnectionState {
 public:
     ClientConnectionState(QObject* parent = nullptr): common::ConnectionState(parent) {}
 
-    QByteArray deviceSertificate;
+    QByteArray deviceCertificate;
+    QByteArray userCertificate;
+
+    quint64 userId{ 0 };
+    bool authorized{ false };
 };
 
 } // namespace client

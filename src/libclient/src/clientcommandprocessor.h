@@ -20,12 +20,23 @@ private:
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_REPLY);
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_RETRY);
     DECLARE_CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL);
+    DECLARE_CLIENT_HANDLER(SC_NEW_USER_CREATED);
+    DECLARE_CLIENT_HANDLER(SC_AUTHORIZED);
+
+    DECLARE_CLIENT_HANDLER(CC_ADD_CONTACT_REQUEST);
+    DECLARE_CLIENT_HANDLER(CC_ADD_CONTACT_ACCEPT);
+    DECLARE_CLIENT_HANDLER(CC_MESSAGE);
 
 public:
 signals:
     void handshakeChallenge(QString);
     void handshakeRetry();
     void handshakeSuccessfull();
+    void authorized(bool);
+    void newUserId(quint64);
+    void contactRequest(quint64);
+    void contactAccepted(quint64);
+    void incomingMessage(quint64, QByteArray);
 
 };
 

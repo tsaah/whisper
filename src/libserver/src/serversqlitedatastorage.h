@@ -11,8 +11,15 @@ class WHISPER_LIBSERVER ServerSqliteDataStorage: public IServerDataStorage {
 public:
     explicit ServerSqliteDataStorage(QObject* parent = nullptr);
 
-    bool isDeviceKnown(const QByteArray& deviceCert) const override;
+    bool deviceExists(const QByteArray& deviceCert) const override;
     void rememberDevice(const QByteArray& deviceCert) override;
+
+    bool userExists(const QByteArray& deviceCert) const override;
+    bool userIdExists(quint64 userId) const override;
+    void rememberNewUser(quint64 userId, const QByteArray& userCert, const QByteArray& deviceCert, const QByteArray& passwordHash, const QByteArray &passwordSalt) override;
+    QByteArray getUserCertificate(quint64 userId) const override;
+    QByteArray getPasswordHash(quint64 userId) const override;
+    QByteArray getPasswordSalt(quint64 userId) const override;
 
 private:
     QSqlDatabase db() const;

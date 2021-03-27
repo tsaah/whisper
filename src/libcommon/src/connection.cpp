@@ -11,10 +11,12 @@ Connection::Connection(QObject* parent)
     : QSslSocket(parent)
 {
     connect(this, &Connection::readyRead, this, &Connection::onReadyRead);
+    connect(&killTimer_, &QTimer::timeout, this, &Connection::close);
+    connect(&killTimer_, &QTimer::timeout, this, &Connection::deleteLater);
 }
 
 Connection::~Connection() {
-        wDebug << "connection destroyed";
+    wDebug << "connection destroyed";
 }
 
 void Connection::send(const SerializedCommand &command) {
@@ -23,6 +25,14 @@ void Connection::send(const SerializedCommand &command) {
 
 void Connection::sendEncrypted(const EncryptedCommand &command) {
     send(command.id_, command.data_, true);
+}
+
+void Connection::startKillTimer(std::chrono::milliseconds timer) {
+    killTimer_.start(timer);
+}
+
+void Connection::stopKillTimer() {
+    killTimer_.stop();
 }
 
 void Connection::onAboutToClose() {

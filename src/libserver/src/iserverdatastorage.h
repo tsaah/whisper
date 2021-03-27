@@ -15,8 +15,16 @@ class WHISPER_LIBSERVER IServerDataStorage: public common::DataStorage {
 public:
     explicit IServerDataStorage(QObject* parent = nullptr): common::DataStorage(parent) {}
 
-    virtual bool isDeviceKnown(const QByteArray& deviceCert) const = 0;
+    virtual bool deviceExists(const QByteArray& deviceCert) const = 0;
     virtual void rememberDevice(const QByteArray& deviceCert) = 0;
+
+    virtual bool userExists(const QByteArray& userCert) const = 0;
+    virtual bool userIdExists(quint64 userId) const = 0;
+    virtual void rememberNewUser(quint64 userId, const QByteArray& userCert, const QByteArray& deviceCert, const QByteArray& passwordHash, const QByteArray &passwordSalt) = 0;
+    virtual QByteArray getUserCertificate(quint64 userId) const = 0;
+    virtual QByteArray getPasswordHash(quint64 userId) const = 0;
+    virtual QByteArray getPasswordSalt(quint64 userId) const = 0;
+
 };
 
 } // namespace server
