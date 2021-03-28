@@ -18,10 +18,9 @@ Controller::Controller(QObject *parent)
     state_ = new ClientConnectionState(connection_);
     processor_ = new ClientCommandProcessor(connection_);
     data_ = new ClientSqliteDataStorage(connection_);
-    connect(connection_, &Connection::commandReceived, [this](SerializedCommand command){
-        processor_->processCommand(connection_, command, state_, data_);
-    });
-    connect(connection_, &Connection::disconnected, [this]{ processor_->reset(); });
+
+    connect(connection_, &Connection::commandReceived, this, &Controller::onCommandReceived);
+    connect(connection_, &Connection::disconnected, this, &Controller::onDisconnected);
     connect(connection_, &Connection::stateChanged, this, &Controller::onConnectionStateChanged);
 
     if (!data_->isStoredDeviceCertificateEmpty()) {
@@ -56,6 +55,10 @@ quint64 Controller::userId() const {
 
 bool Controller::authorized() const {
     return authorized_;
+}
+
+uint Controller::deviceHash() const {
+    return deviceHash_;
 }
 
 void Controller::connectToServer(const QString &hostName, quint16 port) {
@@ -108,6 +111,20 @@ void Controller::sendMessage(quint64 userId, const QString &message) {
     // TODO: decrypt
     const auto encryptedMessage = message.toUtf8();
     connection_->send(CC_MESSAGE{ userId, encryptedMessage });
+}
+
+void Controller::setDeviceHash(uint deviceHash) {
+    if (deviceHash_ == deviceHash) { return; }
+    deviceHash_ = deviceHash;
+    emit deviceHashChanged(deviceHash_);
+}
+
+void Controller::onCommandReceived(common::SerializedCommand command) {
+    processor_->processCommand(connection_, command, state_, data_);
+}
+
+void Controller::onDisconnected() {
+    processor_->reset();
 }
 
 void Controller::setUserId(quint64 userId) {

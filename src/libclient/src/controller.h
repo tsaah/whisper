@@ -3,6 +3,8 @@
 
 #include "libclient_export.h"
 
+#include <packet.h>
+
 #include <QAbstractSocket>
 #include <QObject>
 
@@ -22,16 +24,17 @@ class ClientSqliteDataStorage;
 
 class WHISPER_LIBCLIENT Controller : public QObject {
     Q_OBJECT
-
     Q_PROPERTY(int connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
     Q_PROPERTY(quint64 userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(bool authorized READ authorized WRITE setAuthorized NOTIFY authorizedChanged)
+    Q_PROPERTY(uint deviceHash READ deviceHash WRITE setDeviceHash NOTIFY deviceHashChanged)
 public:
     explicit Controller(QObject *parent = nullptr);
 
     int connectionState() const;
     quint64 userId() const;
     bool authorized() const;
+    uint deviceHash() const;
 
 public slots:
     void connectToServer(const QString& hostName, quint16 port);
@@ -43,6 +46,7 @@ public slots:
     void addContact(quint64 userId);
     void confirmAddingContact(quint64 userId);
     void sendMessage(quint64 userId, const QString& message);
+    void setDeviceHash(uint deviceHash);
 
 signals:
     void connectionStateChanged(int connectionState);
@@ -54,8 +58,12 @@ signals:
     void contactRequest(quint64);
     void contactAccepted(quint64);
     void incomingMessage(quint64, QString);
+    void deviceHashChanged(uint deviceHash);
+    void controllerClosed();
 
 private slots:
+    void onCommandReceived(common::SerializedCommand command);
+    void onDisconnected();
     void setUserId(quint64 userId);
     void setAuthorized(bool authorized);
     void setConnectionState(int connectionState);
@@ -70,7 +78,8 @@ private:
 
     int connectionState_{ 0 };
     quint64 userId_{ 0 };
-    bool authorized_;
+    bool authorized_{ false };
+    uint deviceHash_{ 0 };
 };
 
 } // namespace client

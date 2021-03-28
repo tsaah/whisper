@@ -11,8 +11,7 @@ Connection::Connection(QObject* parent)
     : QSslSocket(parent)
 {
     connect(this, &Connection::readyRead, this, &Connection::onReadyRead);
-    connect(&killTimer_, &QTimer::timeout, this, &Connection::close);
-    connect(&killTimer_, &QTimer::timeout, this, &Connection::deleteLater);
+
 }
 
 Connection::~Connection() {
@@ -27,13 +26,6 @@ void Connection::sendEncrypted(const EncryptedCommand &command) {
     send(command.id_, command.data_, true);
 }
 
-void Connection::startKillTimer(std::chrono::milliseconds timer) {
-    killTimer_.start(timer);
-}
-
-void Connection::stopKillTimer() {
-    killTimer_.stop();
-}
 
 void Connection::onAboutToClose() {
     wDebug;
@@ -61,7 +53,6 @@ void Connection::onReadyRead() {
     if (bytesAvailable() <= 0) {
         wDebug << "some faulty shit is happening";
         close();
-        deleteLater();
         return;
     }
 
@@ -80,21 +71,18 @@ void Connection::onReadyRead() {
             if (packetHeader_.magic != PacketHeader::s_magic) {
                 wWarn << "incoming data had no correct magic";
                 close();
-                deleteLater();
                 return;
             }
 
             if (packetHeader_.payloadSize < 0 || packetHeader_.payloadSize > PacketHeader::s_maximumPayloadSize) {
                 wWarn << "incoming data had invalid payloadSize";
                 close();
-                deleteLater();
                 return;
             }
 
             if (packetHeader_.version < PacketHeader::s_minimumVersion) {
                 wWarn << "incoming packet version is too old to process";
                 close();
-                deleteLater();
                 return;
             }
             // if there will be backward compatibility packet version support we should do it here
@@ -126,7 +114,6 @@ void Connection::onReadyRead() {
         } else {
             wWarn << "checksums didn't match";
             close();
-            deleteLater();
             return;
         }
 

@@ -7,11 +7,6 @@
 
 #include <QSslSocket>
 
-#include <QTimer>
-#include <chrono>
-
-using namespace std::chrono_literals;
-
 namespace whisper {
 namespace common {
 
@@ -24,8 +19,6 @@ public:
 public slots:
     void send(const SerializedCommand& command);
     void sendEncrypted(const EncryptedCommand& command);
-    void startKillTimer(std::chrono::milliseconds timer);
-    void stopKillTimer();
 
 signals:
     void commandReceived(SerializedCommand);
@@ -74,7 +67,7 @@ private:
 
     void send(CommandId commandId, const QByteArray& payload, bool encrypted);
 
-    QTimer killTimer_;
+
 };
 
 } // namespace common
