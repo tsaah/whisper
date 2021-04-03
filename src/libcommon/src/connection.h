@@ -21,7 +21,7 @@ public slots:
     void sendEncrypted(const EncryptedCommand& command);
 
 signals:
-    void commandReceived(SerializedCommand);
+    void plainCommandReceived(SerializedCommand);
     void encryptedCommandReceived(EncryptedCommand);
 
 private slots:
@@ -66,8 +66,6 @@ private:
     #pragma pack(pop)
 
     void send(CommandId commandId, const QByteArray& payload, bool encrypted);
-
-
 };
 
 } // namespace common

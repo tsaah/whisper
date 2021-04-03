@@ -1,5 +1,6 @@
-#include "controller.h"
+#include "servercontroller.h"
 #include "dispatcher.h"
+#include "serversqlitedatastorage.h"
 
 #include <connection.h>
 
@@ -8,22 +9,25 @@ using namespace whisper::common;
 namespace whisper {
 namespace server {
 
-Dispatcher::Dispatcher(QObject *parent) {
-
+Dispatcher::Dispatcher(QObject *parent)
+    : db_(new ServerSqliteDataStorage(this))
+{
 }
 
 void Dispatcher::addConnection(Connection* connection) {
-    auto* controller = new Controller(connection, this);
+    auto* controller = new ServerController(connection, db_, this, this);
 
-    connect(controller, &Controller::authorizedChanged, this, &Dispatcher::onControllerAuthorized);
-    connect(controller, &Controller::deviceHashChanged, this, &Dispatcher::onControllerDeviceChanged);
-    connect(controller, &Controller::controllerClosed, this, &Dispatcher::onControllerClosed);
+    connect(controller, &ServerController::authorizedChanged, this, &Dispatcher::onControllerAuthorized);
+
+    connect(controller, &ServerController::deviceCertificateHashChanged, this, &Dispatcher::onControllerDeviceChanged);
+
+    connect(controller, &ServerController::controllerClosed, this, &Dispatcher::onControllerClosed);
 
     controllers_.insert(controller);
+    emit controllerAdded(controller);
 }
 
 void Dispatcher::enqueueContactRequest(quint64 userId) {
-
 }
 
 void Dispatcher::enqueueContactRequestAccepted(quint64 userId) {
@@ -35,21 +39,22 @@ void Dispatcher::enqueueMessage(quint64 userId, QByteArray encryptedMessage) {
 }
 
 void Dispatcher::onControllerAuthorized(quint64 userId) {
-    auto* controller = qobject_cast<Controller*>(sender());
+    auto* controller = qobject_cast<ServerController*>(sender());
     authorizedControllers_.insert(userId, controller);
 }
 
-void Dispatcher::onControllerDeviceChanged(uint deviceHash) {
-    auto* controller = qobject_cast<Controller*>(sender());
-    controllersByDevice_.insert(deviceHash, controller);
+void Dispatcher::onControllerDeviceChanged(uint deviceCertificateHash) {
+    auto* controller = qobject_cast<ServerController*>(sender());
+    controllersByDevice_.insert(deviceCertificateHash, controller);
 }
 
 void Dispatcher::onControllerClosed() {
-    auto* controller = qobject_cast<Controller*>(sender());
+    auto* controller = qobject_cast<ServerController*>(sender());
     authorizedControllers_.remove(controller->userId());
-    controllersByDevice_.remove(controller->deviceHash());
+    controllersByDevice_.remove(controller->deviceCertificateHash());
     controllers_.remove(controller);
     controller->deleteLater();
+    emit controllerRemoved(controller);
 }
 
 } // namespace server

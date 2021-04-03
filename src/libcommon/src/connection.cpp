@@ -11,7 +11,6 @@ Connection::Connection(QObject* parent)
     : QSslSocket(parent)
 {
     connect(this, &Connection::readyRead, this, &Connection::onReadyRead);
-
 }
 
 Connection::~Connection() {
@@ -25,7 +24,6 @@ void Connection::send(const SerializedCommand &command) {
 void Connection::sendEncrypted(const EncryptedCommand &command) {
     send(command.id_, command.data_, true);
 }
-
 
 void Connection::onAboutToClose() {
     wDebug;
@@ -109,7 +107,7 @@ void Connection::onReadyRead() {
             if (encrypted) {
                 emit encryptedCommandReceived({ packetHeader_.commandId, payload });
             } else {
-                emit commandReceived({ packetHeader_.commandId, payload });
+                emit plainCommandReceived({ packetHeader_.commandId, payload });
             }
         } else {
             wWarn << "checksums didn't match";

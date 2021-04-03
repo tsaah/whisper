@@ -5,6 +5,7 @@
 #include "libcommon_export.h"
 #include "stringhash.h"
 #include "log.h"
+#include "crypto.h"
 
 #include <QDataStream>
 #include <QMetaObject>
@@ -63,6 +64,7 @@ COMMAND_ID(SC_NEW_USER_CREATED);
 COMMAND_ID(SC_AUTHORIZED);
 
 COMMAND_ID(CC_ADD_CONTACT_REQUEST);
+COMMAND_ID(CC_ADD_CONTACT_REQUEST_COMPLETED);
 COMMAND_ID(CC_ADD_CONTACT_ACCEPT);
 COMMAND_ID(CC_MESSAGE);
 
@@ -114,10 +116,10 @@ COMMAND(CS_OLD_USER)
     FIELD(QByteArray, password)
 };
 COMMAND(CS_INTERACTIVE_CHALLENGE_REPLY)
-    FIELD(QByteArray, challengeReply)
+    FIELD(QString, challengeReply)
 };
 COMMAND(SC_HANDSHAKE_REPLY)
-    FIELD(QByteArray, handshakeReply)
+    FIELD(QString, handshakeReply)
 };
 COMMAND(SC_HANDSHAKE_RETRY)
 };
@@ -131,6 +133,9 @@ COMMAND(SC_AUTHORIZED)
 COMMAND(CC_ADD_CONTACT_REQUEST)
     FIELD(quint64, userId)
 };
+COMMAND(CC_ADD_CONTACT_REQUEST_COMPLETED)
+    FIELD(quint64, userId)
+};
 COMMAND(CC_ADD_CONTACT_ACCEPT)
     FIELD(quint64, userId)
 };
@@ -138,6 +143,7 @@ COMMAND(CC_MESSAGE)
     FIELD(quint64, userId)
     FIELD(QByteArray, encryptedMessage)
 };
+
 
 } // namespace common
 } // namespace whisper

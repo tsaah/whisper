@@ -9,13 +9,15 @@
 namespace whisper {
 namespace common {
 
+using Certificate = QByteArray;
+
 class WHISPER_LIBCOMMON Crypto {
 public:
-    static QByteArray generateNewDeviceCertificate();
-    static QByteArray generateNewUserCertificate();
+    static Certificate generateNewDeviceCertificate();
+    static Certificate generateNewUserCertificate();
     static QByteArray generateSalt();
     static QByteArray hashPassword(const QByteArray& password, const QByteArray& salt);
-    static QPair<QByteArray, QByteArray> generateChallengeResponse();
+    static QPair<QString, QString> generateChallengeResponse();
     static quint64 generateNewUserId();
 };
 

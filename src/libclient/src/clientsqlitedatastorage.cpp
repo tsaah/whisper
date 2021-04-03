@@ -7,8 +7,9 @@
 namespace whisper {
 namespace client {
 
-ClientSqliteDataStorage::ClientSqliteDataStorage(QObject *parent)
+ClientSqliteDataStorage::ClientSqliteDataStorage(const QString& databaseFilename, QObject *parent)
     : IClientDataStorage(parent)
+    , databaseFilename_(databaseFilename)
 {
     initialize();
 }
@@ -140,12 +141,11 @@ void ClientSqliteDataStorage::clearUserId() {
 }
 
 QSqlDatabase ClientSqliteDataStorage::db() const {
-    const QString dbName = "client_data_storage.sqlite";
-    if (!QSqlDatabase::contains(dbName)) {
-        auto db = QSqlDatabase::addDatabase("QSQLITE", dbName);
-        db.setDatabaseName(dbName);
+    if (!QSqlDatabase::contains(databaseFilename_)) {
+        auto db = QSqlDatabase::addDatabase("QSQLITE", databaseFilename_);
+        db.setDatabaseName(databaseFilename_);
     }
-    return QSqlDatabase::database(dbName);
+    return QSqlDatabase::database(databaseFilename_);
 }
 
 void ClientSqliteDataStorage::initialize() {

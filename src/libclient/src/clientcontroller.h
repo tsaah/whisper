@@ -1,0 +1,69 @@
+#ifndef WHISPER_CLIENT_CLIENTCONTROLLER_H
+#define WHISPER_CLIENT_CLIENTCONTROLLER_H
+
+#include "libclient_export.h"
+
+#include <controller.h>
+
+#include <QAbstractSocket>
+
+namespace whisper {
+namespace client {
+
+class ClientSqliteDataStorage;
+
+class WHISPER_LIBCLIENT ClientController: public common::Controller {
+    Q_OBJECT
+    Q_PROPERTY(QAbstractSocket::SocketState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+public:
+    explicit ClientController(const QString& databaseFilename, QObject *parent = nullptr);
+
+public slots:
+    void connectToServer(const QString& hostName, quint16 port);
+    void disconnectFromServer();
+    void sendHandshakeChallangeReply(const QString& reply);
+    void changeDeviceCertificate();
+    void createNewUser(const QByteArray& password);
+    void useOldUser(quint64 userId, const QByteArray& password);
+    void addContact(quint64 userId);
+    void confirmAddingContact(quint64 userId);
+    void sendMessage(quint64 userId, const QString& message);
+
+signals:
+    void handshakeChallenge(QString challenge);
+    void handshakeRetry();
+    void handshakeSuccessfull();
+    void contactRequest(quint64);
+    void contactAccepted(quint64);
+    void incomingMessage(quint64, QString);
+    void controllerClosed();
+
+protected slots:
+    void onPlainCommandReceived(common::SerializedCommand cmd) override;
+    void onEncryptedCommandReceived(common::EncryptedCommand cmd) override;
+    void onConnectionStateChanged(QAbstractSocket::SocketState state) override;
+
+private:
+    ClientSqliteDataStorage* db_{ nullptr };
+
+
+
+
+
+public:
+    QAbstractSocket::SocketState connectionState() const;
+
+private slots:
+    void setConnectionState(QAbstractSocket::SocketState connectionState);
+
+signals:
+    void connectionStateChanged(QAbstractSocket::SocketState connectionState);
+
+private:
+    QAbstractSocket::SocketState connectionState_{ QAbstractSocket::UnconnectedState };
+};
+
+} // namespace client
+} // namespace whisper
+
+#endif // WHISPER_CLIENT_CLIENTCONTROLLER_H

@@ -39,6 +39,12 @@ Window {
             challengeBox.achallenge = ''
             challengeBox.aretry = 0
         }
+        function onContactRequest(userId) {
+            console.log('contact request from' + String(userId))
+        }
+        function onContactAccepted(userId) {
+            console.log('contact request accepted from' + String(userId))
+        }
     }
 
 
@@ -279,6 +285,95 @@ Window {
             }
         }
 
-        Item { Layout.fillHeight: true }
+        Button {
+            Dialog {
+                id: addContact
+                ColumnLayout {
+                    anchors.fill: parent
+                    Label {
+                        text: 'Enter contact id'
+                        Layout.fillWidth: true
+                    }
+                    TextField {
+                        id: contactId
+                        Layout.fillWidth: true
+                    }
+                    Button {
+                        text: 'Request'
+                        Layout.fillWidth: true
+                        onClicked: {
+                            controller.addContact(Number(contactId.text))
+                            addContact.accept()
+                        }
+                    }
+                }
+            }
+            text: 'Add Contact'
+            Layout.fillWidth: true
+            onClicked: addContact.open()
+        }
+
+        ListView {
+            id: contactList
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 2
+
+            model: ListModel {
+                ListElement {
+                    name: "Bill Smith"
+                    number: "1"
+                }
+                ListElement {
+                    name: "John Brown"
+                    number: "2"
+                }
+                ListElement {
+                    name: "Sam Wise"
+                    number: "3"
+                }
+            }
+
+            delegate: Rectangle {
+                height: 64
+                width: contactList.width
+                radius: 3
+                color: mouseArea.containsMouse ? 'green' : 'gray'
+                Text {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    text: name
+                    font.pixelSize: 18
+                }
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        messageBox.contactId = number
+                        messageBox.open()
+                    }
+                }
+                Dialog {
+                    id: messageBox
+                    property int contactId
+                    ColumnLayout {
+                        Label {
+                            text: messageBox.contactId
+                        }
+                        TextArea {
+                            width: messageBox.width
+                            height: 256
+                        }
+                        Button {
+                            text: 'send'
+                            onClicked: messageBox.accept()
+                        }
+                    }
+                }
+
+            }
+        }
     }
+
 }

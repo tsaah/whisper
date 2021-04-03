@@ -9,7 +9,7 @@ namespace client {
 class WHISPER_LIBCLIENT ClientSqliteDataStorage: public IClientDataStorage {
     Q_OBJECT
 public:
-    explicit ClientSqliteDataStorage(QObject* parent = nullptr);
+    explicit ClientSqliteDataStorage(const QString& databaseFilename, QObject* parent = nullptr);
 
     bool isStoredDeviceCertificateEmpty() const override;
     QByteArray restoreDeviceCertificate() const override;
@@ -31,6 +31,8 @@ private:
     void initialize();
     void purge();
     void createTables();
+
+    QString databaseFilename_;
 };
 
 } // namespace client

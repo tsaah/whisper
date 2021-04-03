@@ -1,4 +1,4 @@
-#include <controller.h>
+#include <clientcontroller.h>
 #include <log.h>
 
 #include <QGuiApplication>
@@ -35,9 +35,9 @@ int main(int argc, char** argv) {
 
     QQmlApplicationEngine engine;
 
-    Controller controller;
+    ClientController controller("simpleclient_data_storage.sqlite");
 
-    qmlRegisterUncreatableType<Controller>("Whisper.Controller", 1, 0, "Controller", QString("Controller is uncratable"));
+    qmlRegisterUncreatableType<ClientController>("Whisper.Controller", 1, 0, "Controller", QString("Controller is uncratable"));
     engine.rootContext()->setContextProperty("controller", &controller);
 
 

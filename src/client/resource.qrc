@@ -2,5 +2,13 @@
     <qresource prefix="/"/>
     <qresource prefix="/qml">
         <file>main.qml</file>
+        <file>SplashScreen.qml</file>
+        <file>ConnectingWidget.qml</file>
+        <file>LoginScreen.qml</file>
+        <file>LockScreen.qml</file>
+        <file>HandshakeDialog.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file alias="silence-white.png">images/silence-white.png</file>
     </qresource>
 </RCC>

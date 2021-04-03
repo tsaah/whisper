@@ -11,7 +11,7 @@ Window {
     width: 350
     height: 625
     visible: true
-    color: '#000'
+    color: '#32303d'
     property var currentUserId
 
     Material.theme: Material.Dark
@@ -22,123 +22,95 @@ Window {
 
 
     Component.onCompleted: {
-        controller.connectToServer('127.0.0.1', 12345)
+        controller.connectToServer(defaults.host, defaults.port)
+        if (controller.userId)
+        console.log(controller.userId, controller.deviceCertificateHash)
     }
 
-    ColumnLayout {
+    QtObject {
+        id: defaults
+        readonly property string host: '10.0.0.128'
+//        readonly property string host: '10.0.0.20'
+        readonly property int port: 12345
+    }
+
+
+    StackView {
+        id: stackView
         anchors.fill: parent
-        anchors.margins: 10
-        Button {
-            id: connectionButton
-            property var actions: [ 'connect', '…', '…', 'disconnect', '…', '…', '…' ]
-            property var texts: [ 'unconnected', 'host lookup', 'connecting', 'connected', 'bound', 'closing', 'listening' ]
-            property var colors: [ 'red', 'blue', 'blue', 'green', 'black', 'red', 'black' ]
-            Layout.fillWidth: true
-            enabled: controller.connectionState == 0 || controller.connectionState == 3
-            text: connectionButton.actions[controller.connectionState]
-            onClicked: if (controller.connectionState == 0) {
-                           controller.connectToServer('127.0.0.1', 12345)
-                       } else if (controller.connectionState == 3) {
-                           controller.disconnectFromServer()
-                       }
+        enabled: controller.connectionState === 3
 
-            Item {
-                id: connectionStateIndicator
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.margins: 10
-                width: 20
-                height: 20
+        initialItem: loginScreenComponent
 
-
-
-                Rectangle {
-                    anchors.fill: parent
-                    z: 10
-                    color: connectionButton.colors[controller.connectionState]
-                    radius: 10
-                    border.width: 1
-                    border.color: '#00000080'
-                    opacity: controller.connectionState === 2 ? 0 : 1
-                    Behavior on opacity {
-                        OpacityAnimator {
-                            duration: 250
-                        }
-                    }
-                }
-                BusyIndicator {
-                    id: busyIndicator1
-                    anchors.fill: parent
-
-                    opacity: controller.connectionState === 2 ? 1 : 0
-                    running: true
-                    contentItem: Item {
-                         implicitWidth: connectionStateIndicator.width
-                         implicitHeight: connectionStateIndicator.height
-                         width: connectionStateIndicator.width
-                         height: connectionStateIndicator.height
-
-                         Item {
-                             id: item
-                             anchors.fill: connectionStateIndicator
-                             x: -connectionStateIndicator.width / 2 + 3
-                             y: -connectionStateIndicator.height / 2 + 3
-                             width: connectionStateIndicator.width
-                             height: connectionStateIndicator.height
-                             opacity: busyIndicator1.running ? 1 : 0
-
-                             Behavior on opacity {
-                                 OpacityAnimator {
-                                     duration: 250
-                                 }
-                             }
-
-                             RotationAnimator {
-                                 target: item
-                                 running: busyIndicator1.visible && busyIndicator1.running
-                                 from: 0
-                                 to: 360
-                                 loops: Animation.Infinite
-                                 duration: 1250
-                             }
-
-                             Repeater {
-                                 id: repeater
-                                 model: 3
-
-                                 Rectangle {
-                                     x: item.width / 2 + width / 2
-                                     y: item.height / 2 + height / 2
-                                     width: 6
-                                     height: 6
-                                     radius: 3
-                                     color: "#214efb"
-                                     transform: [
-                                         Translate {
-                                             x: -Math.min(item.width, item.height) * 0.5
-                                         },
-                                         Rotation {
-                                             angle: index / repeater.count * 360
-                                             origin.x: -3
-                                             origin.y: -3
-                                         }
-                                     ]
-                                 }
-                             }
-                         }
-                     }
-                }
+        pushEnter: Transition {
+            PropertyAnimation {
+                property: 'x'
+                from: rootWindow.width
+                to: 0
+                duration: 200
+                easing.type: Easing.OutExpo
             }
-            Label {
-                anchors.verticalCenter: connectionStateIndicator.verticalCenter
-                anchors.left: connectionStateIndicator.right
-                anchors.margins: 10
-                color: 'gray'
-                text: connectionButton.texts[controller.connectionState]
-            }
-
         }
-
-        Item { Layout.fillHeight: true }
+        pushExit: Transition {
+            PropertyAnimation {
+                property: 'opacity'
+                from: 1
+                to: 0.6
+                duration: 200
+                easing.type: Easing.OutExpo
+            }
+        }
+        popEnter: Transition {
+            PropertyAnimation {
+                property: 'opacity'
+                from: 0.6
+                to: 1
+                duration: 200
+                easing.type: Easing.OutExpo
+            }
+        }
+        popExit: Transition {
+            PropertyAnimation {
+                property: 'x'
+                from: 0
+                to: rootWindow.width
+                duration: 200
+                easing.type: Easing.OutExpo
+            }
+        }
     }
+
+    Component {
+        id: loginScreenComponent
+        LoginScreen {}
+    }
+    Component {
+        id: lockScreenComponent
+        LockScreen {}
+    }
+
+
+
+
+//    Timer {
+//        id: lockTimer
+//        interval: 5000
+//        running: true
+//        onTriggered: stackView.push(lockScreenComponent)
+//    }
+
+    Timer {
+        id: reconnectTimer
+        interval: 300
+        running: controller.connectionState !== 3
+        onTriggered: controller.connectToServer(defaults.host, defaults.port)
+    }
+
+    HandshakeDialog {
+        id: handshakeDialog
+    }
+
+    ConnectingWidget {}
+
+    SplashScreen {}
 }

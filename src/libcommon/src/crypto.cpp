@@ -4,16 +4,16 @@
 namespace whisper {
 namespace common {
 
-QByteArray Crypto::generateNewDeviceCertificate() {
-    QByteArray ba;
+Certificate Crypto::generateNewDeviceCertificate() {
+    Certificate ba;
     for (int i = 0; i < 4096; ++i) {
         ba.append(static_cast<char>(qrand()));
     }
     return ba.toBase64();
 }
 
-QByteArray Crypto::generateNewUserCertificate() {
-    QByteArray ba;
+Certificate Crypto::generateNewUserCertificate() {
+    Certificate ba;
     for (int i = 0; i < 4096; ++i) {
         ba.append(static_cast<char>(qrand()));
     }
@@ -33,12 +33,12 @@ QByteArray Crypto::hashPassword(const QByteArray &password, const QByteArray &sa
     return QByteArray::number(qHash(saltedPassword));
 }
 
-QPair<QByteArray, QByteArray> Crypto::generateChallengeResponse() {
-    QByteArray c;
-    QByteArray r;
+QPair<QString, QString> Crypto::generateChallengeResponse() {
+    QString c;
+    QString r;
     c = "enter me secret key to connect";
     for (int i = 0; i < 6; ++i) {
-        r.append(QByteArray::number(qrand() % 10));
+        r.append(QString::number(qrand() % 10));
     }
     return { c, r };
 }
