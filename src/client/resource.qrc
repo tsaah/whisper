@@ -7,6 +7,9 @@
         <file>LoginScreen.qml</file>
         <file>LockScreen.qml</file>
         <file>HandshakeDialog.qml</file>
+        <file>SetPasswordDialog.qml</file>
+        <file>ContactListScreen.qml</file>
+        <file>OldUserDialog.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="silence-white.png">images/silence-white.png</file>

@@ -16,6 +16,7 @@ using namespace whisper::client;
 //}
 
 int main(int argc, char** argv) {
+    qsrand(QDateTime::currentMSecsSinceEpoch());
 
     if (!QSslSocket::supportsSsl()) {
         wError << "no openssl support";

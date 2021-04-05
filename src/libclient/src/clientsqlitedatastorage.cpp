@@ -17,11 +17,9 @@ ClientSqliteDataStorage::ClientSqliteDataStorage(const QString& databaseFilename
 bool ClientSqliteDataStorage::isStoredDeviceCertificateEmpty() const {
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1);");
+    ok = q.exec("SELECT `id` FROM `deviceCertificate_table` WHERE `id` = 1 LIMIT 1;");
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() != 1;
+    return !q.next();
 }
 
 QByteArray ClientSqliteDataStorage::restoreDeviceCertificate() const {
@@ -59,11 +57,9 @@ void ClientSqliteDataStorage::clearDeviceCertificate() {
 bool ClientSqliteDataStorage::isStoredUserCertificateEmpty() const {
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `userCertificate_table` WHERE `id` = 1 LIMIT 1);");
+    ok = q.exec("SELECT `id` FROM `userCertificate_table` WHERE `id` = 1 LIMIT 1;");
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() != 1;
+    return !q.next();
 }
 
 QByteArray ClientSqliteDataStorage::restoreUserCertificate() const {
@@ -101,11 +97,9 @@ void ClientSqliteDataStorage::clearUserCertificate() {
 bool ClientSqliteDataStorage::isStoredUserIdEmpty() const {
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.exec("SELECT EXISTS(SELECT 1 FROM `userId_table` WHERE `id` = 1 LIMIT 1);");
+    ok = q.exec("SELECT `id` FROM `userId_table` WHERE `id` = 1 LIMIT 1;");
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() != 1;
+    return !q.next();
 }
 
 quint64 ClientSqliteDataStorage::restoreUserId() const {

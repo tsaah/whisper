@@ -34,6 +34,7 @@ ClientController::ClientController(const QString& databaseFilename, QObject *par
             setUserId(db_->restoreUserId());
         }
     }
+    wDebug << deviceCertificateHash() << deviceCertificate().left(10);
 }
 
 void ClientController::connectToServer(const QString &hostName, quint16 port) {
@@ -51,15 +52,16 @@ void ClientController::sendHandshakeChallangeReply(const QString &reply) {
 }
 
 void ClientController::changeDeviceCertificate() {
-    disconnectFromServer();
     const auto deviceCert = Crypto::generateNewDeviceCertificate();
     setDeviceCertificate(deviceCert);
     setDeviceCertificateHash(qHash(deviceCert));
+    wDebug << deviceCertificateHash() << deviceCertificate().left(10);
     db_->storeDeviceCertificate(deviceCert);
     setUserCertificate({});
     setUserCertificateHash(0);
     setUserId(0);
     db_->clearUserCertificate();
+    disconnectFromServer();
 }
 
 void ClientController::createNewUser(const QByteArray& password) {
@@ -70,12 +72,13 @@ void ClientController::createNewUser(const QByteArray& password) {
     connection_->send(CS_NEW_USER{ userCert, password });
 }
 
-void ClientController::useOldUser(quint64 userId, const QByteArray &password) {
+void ClientController::useOldUser(quint64 userId, const QString &password) {
+    // TODO: tranfer user certificate from other device:
     // send userid and pass to server
     // server checks user id and pass
     // server sends challenge to other user devices and log
     // server sends challenge request to this client and awaits correct reply
-    // CONSIDER: using device certificate to encrypt messages or tranfer user certificate from other device?
+    connection_->send(CS_OLD_USER{ userId, password });
 }
 
 void ClientController::addContact(quint64 userId) {
@@ -94,64 +97,23 @@ void ClientController::sendMessage(quint64 userId, const QString &message) {
     connection_->send(CC_MESSAGE{ userId, encryptedMessage });
 }
 
+void ClientController::logout() {
+    disconnectFromServer();
+}
+
 void ClientController::onPlainCommandReceived(SerializedCommand cmd) {
     switch (cmd.id_) {
-        case command::SC_HANDSHAKE_REPLY: {
-            if (!authorized()) {
-                const auto c = cmd.deserialize<SC_HANDSHAKE_REPLY>();
-                emit handshakeChallenge(c.handshakeReply);
-            }
-        } break;
-        case command::SC_HANDSHAKE_RETRY: {
-            if (!authorized()) {
-                emit handshakeRetry();
-            }
-        } break;
-        case command::SC_HANDSHAKE_SUCCESSFULL: {
-            if (!authorized()) {
-                const auto c = cmd.deserialize<SC_HANDSHAKE_SUCCESSFULL>();
-                emit handshakeSuccessfull();
-            }
-        } break;
-        case command::SC_NEW_USER_CREATED: {
-            if (!authorized()) {
-                const auto c = cmd.deserialize<SC_NEW_USER_CREATED>();
-                setUserId(c.userId);
-                db_->storeUserId(c.userId);
-            }
-        } break;
-        case command::SC_AUTHORIZED: {
-            if (!authorized()) {
-                setAuthorized(true);
-            }
-        } break;
-        case command::CC_ADD_CONTACT_REQUEST: {
-            if (authorized()) {
-                const auto c = cmd.deserialize<CC_ADD_CONTACT_REQUEST>();
-                emit contactRequest(c.userId);
-            }
-        } break;
-        case command::CC_ADD_CONTACT_REQUEST_COMPLETED: {
-            if (authorized()) {
-                const auto c = cmd.deserialize<CC_ADD_CONTACT_REQUEST_COMPLETED>();
-                // TODO: notify that contact request is finished on different device
-            }
-        } break;
-        case command::CC_ADD_CONTACT_ACCEPT: {
-            if (authorized()) {
-                const auto c = cmd.deserialize<CC_ADD_CONTACT_ACCEPT>();
-                emit contactAccepted(c.userId);
-            }
-        } break;
-        case command::CC_MESSAGE: {
-            if (authorized()) {
-                const auto c = cmd.deserialize<CC_MESSAGE>();
-                // TODO: decrypt message
-                emit incomingMessage(c.userId, c.encryptedMessage);
-            }
-        } break;
+        HANDLE_COMMAND(SC_HANDSHAKE_REPLY);
+        HANDLE_COMMAND(SC_HANDSHAKE_RETRY);
+        HANDLE_COMMAND(SC_HANDSHAKE_SUCCESSFULL);
+        HANDLE_COMMAND(SC_NEW_USER_CREATED);
+        HANDLE_COMMAND(SC_AUTHORIZED);
+        HANDLE_COMMAND(CC_ADD_CONTACT_REQUEST);
+        HANDLE_COMMAND(CC_ADD_CONTACT_REQUEST_COMPLETED);
+        HANDLE_COMMAND(CC_ADD_CONTACT_ACCEPT);
+        HANDLE_COMMAND(CC_MESSAGE);
         default: {
-            // unexpected command
+            wError << "unexpected command";
         }
     }
 }
@@ -168,6 +130,78 @@ void ClientController::onConnectionStateChanged(QAbstractSocket::SocketState sta
     } else if (state == QAbstractSocket::UnconnectedState) {
         // TODO: we did disconnect do a state reset
         setAuthorized(false);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(SC_HANDSHAKE_REPLY, cmd) {
+    wDebug;
+    if (!authorized()) {
+        const auto c = cmd.deserialize<SC_HANDSHAKE_REPLY>();
+        emit handshakeChallenge(c.handshakeReply);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(SC_HANDSHAKE_RETRY, cmd) {
+    wDebug;
+    if (!authorized()) {
+        emit handshakeRetry();
+    }
+}
+
+DEFINE_CLIENT_HANDLER(SC_HANDSHAKE_SUCCESSFULL, cmd) {
+    wDebug;
+    if (!authorized()) {
+        const auto c = cmd.deserialize<SC_HANDSHAKE_SUCCESSFULL>();
+        emit handshakeSuccessfull();
+    }
+}
+
+DEFINE_CLIENT_HANDLER(SC_NEW_USER_CREATED, cmd) {
+    wDebug;
+    if (!authorized()) {
+        const auto c = cmd.deserialize<SC_NEW_USER_CREATED>();
+        setUserId(c.userId);
+        db_->storeUserId(c.userId);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(SC_AUTHORIZED, cmd) {
+    wDebug;
+    if (!authorized()) {
+        setAuthorized(true);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(CC_ADD_CONTACT_REQUEST, cmd) {
+    wDebug;
+    if (authorized()) {
+        const auto c = cmd.deserialize<CC_ADD_CONTACT_REQUEST>();
+        emit contactRequest(c.userId);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(CC_ADD_CONTACT_REQUEST_COMPLETED, cmd) {
+    wDebug;
+    if (authorized()) {
+        const auto c = cmd.deserialize<CC_ADD_CONTACT_REQUEST_COMPLETED>();
+        // TODO: notify that contact request is finished on different device
+    }
+}
+
+DEFINE_CLIENT_HANDLER(CC_ADD_CONTACT_ACCEPT, cmd) {
+    wDebug;
+    if (authorized()) {
+        const auto c = cmd.deserialize<CC_ADD_CONTACT_ACCEPT>();
+        emit contactAccepted(c.userId);
+    }
+}
+
+DEFINE_CLIENT_HANDLER(CC_MESSAGE, cmd) {
+    wDebug;
+    if (authorized()) {
+        const auto c = cmd.deserialize<CC_MESSAGE>();
+        // TODO: decrypt message
+        emit incomingMessage(c.userId, c.encryptedMessage);
     }
 }
 

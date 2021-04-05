@@ -1,6 +1,7 @@
 #include "serversqlitedatastorage.h"
 
 #include <types.h>
+#include <log.h>
 
 #include <QHash>
 #include <QSqlQuery>
@@ -18,14 +19,17 @@ bool ServerSqliteDataStorage::deviceExists(const QByteArray &deviceCert) const {
     const auto hash = qHash(deviceCert);
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.prepare("SELECT EXISTS(SELECT 1 FROM `device_table` WHERE `hash` = :hash LIMIT 1);");
+    ok = q.prepare("SELECT `hash` FROM `device_table` WHERE `hash` = :hash LIMIT 1;");
     SQLASSERT(ok, "query preparation");
     q.bindValue(":hash", hash);
     ok = q.exec();
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() == 1;
+    if (q.next()) {
+        const auto dbHash = q.value("hash").toUInt();
+        wDebug << dbHash << hash << deviceCert.left(10);
+        return dbHash == hash;
+    }
+    return false;
 }
 
 void ServerSqliteDataStorage::rememberDevice(const QByteArray &deviceCert) {
@@ -42,27 +46,30 @@ void ServerSqliteDataStorage::rememberDevice(const QByteArray &deviceCert) {
 bool ServerSqliteDataStorage::userExists(const QByteArray &userCert) const {
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.prepare("SELECT EXISTS(SELECT 1 FROM `user_table` WHERE `hash` = :hash LIMIT 1);");
+    ok = q.prepare("SELECT `id` FROM `user_table` WHERE `hash` = :hash LIMIT 1;");
     SQLASSERT(ok, "query preparation");
     q.bindValue(":hash", qHash(userCert));
     ok = q.exec();
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() == 1;
+    if (q.next()) {
+        return true;
+    }
+    return false;
 }
 
 bool ServerSqliteDataStorage::userIdExists(quint64 userId) const {
     QSqlQuery q(db());
     bool ok = false;
-    ok = q.prepare("SELECT EXISTS(SELECT 1 FROM `user_table` WHERE `id` = :id LIMIT 1);");
+    ok = q.prepare("SELECT `id` FROM `user_table` WHERE `id` = :id LIMIT 1;");
     SQLASSERT(ok, "query preparation");
     q.bindValue(":id", userId);
     ok = q.exec();
     SQLASSERT(ok, "query exec");
-    ok = q.next();
-    SQLASSERT(ok, "query next");
-    return q.value(0).toInt() == 1;
+    if (q.next()) {
+        const auto dbUserId = q.value("id").toUInt();
+        return dbUserId == userId;
+    }
+    return false;
 }
 
 void ServerSqliteDataStorage::rememberNewUser(quint64 userId, const QByteArray &userCert, const QByteArray &deviceCert, const QByteArray &passwordHash, const QByteArray& passwordSalt) {

@@ -58,7 +58,7 @@ Item {
 
                         Item {
                             id: item
-                            anchors.fill: spinnerBackground
+//                            anchors.fill: spinnerBackground
                             x: -spinnerBackground.width / 2 + busyIndicator.dotSize * 0.5 + 1 + busyIndicator.dotSize * 0.5
                             y: -spinnerBackground.height / 2 + busyIndicator.dotSize * 0.5 + 1 + busyIndicator.dotSize * 0.5
                             width: spinnerBackground.width - busyIndicator.dotSize

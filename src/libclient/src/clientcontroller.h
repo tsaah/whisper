@@ -24,10 +24,11 @@ public slots:
     void sendHandshakeChallangeReply(const QString& reply);
     void changeDeviceCertificate();
     void createNewUser(const QByteArray& password);
-    void useOldUser(quint64 userId, const QByteArray& password);
+    void useOldUser(quint64 userId, const QString &password);
     void addContact(quint64 userId);
     void confirmAddingContact(quint64 userId);
     void sendMessage(quint64 userId, const QString& message);
+    void logout();
 
 signals:
     void handshakeChallenge(QString challenge);
@@ -42,6 +43,17 @@ protected slots:
     void onPlainCommandReceived(common::SerializedCommand cmd) override;
     void onEncryptedCommandReceived(common::EncryptedCommand cmd) override;
     void onConnectionStateChanged(QAbstractSocket::SocketState state) override;
+
+
+    DECLARE_HANDLER(SC_HANDSHAKE_REPLY, cmd);
+    DECLARE_HANDLER(SC_HANDSHAKE_RETRY, cmd);
+    DECLARE_HANDLER(SC_HANDSHAKE_SUCCESSFULL, cmd);
+    DECLARE_HANDLER(SC_NEW_USER_CREATED, cmd);
+    DECLARE_HANDLER(SC_AUTHORIZED, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST_COMPLETED, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_ACCEPT, cmd);
+    DECLARE_HANDLER(CC_MESSAGE, cmd);
 
 private:
     ClientSqliteDataStorage* db_{ nullptr };
@@ -65,5 +77,7 @@ private:
 
 } // namespace client
 } // namespace whisper
+
+#define DEFINE_CLIENT_HANDLER(c, v) void ClientController::handle_##c(const SerializedCommand &v)
 
 #endif // WHISPER_CLIENT_CLIENTCONTROLLER_H

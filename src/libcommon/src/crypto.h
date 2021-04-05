@@ -16,7 +16,7 @@ public:
     static Certificate generateNewDeviceCertificate();
     static Certificate generateNewUserCertificate();
     static QByteArray generateSalt();
-    static QByteArray hashPassword(const QByteArray& password, const QByteArray& salt);
+    static QByteArray hashPassword(const QString& password, const QByteArray& salt);
     static QPair<QString, QString> generateChallengeResponse();
     static quint64 generateNewUserId();
 };

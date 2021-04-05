@@ -11,6 +11,8 @@ Rectangle {
     readonly property int thirdAnimationTime: 500
 
     property bool finished: root.opacity == 0
+    visible: opacity !== 0
+    enabled: visible
 
     ColorAnimation on color { to: '#32303d'; duration: firstAnimationTime; easing.type: Easing.OutExpo }
     Behavior on opacity { NumberAnimation { duration: thirdAnimationTime; easing.type: Easing.OutExpo } }

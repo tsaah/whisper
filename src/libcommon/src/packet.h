@@ -113,7 +113,7 @@ COMMAND(CS_NEW_USER)
 };
 COMMAND(CS_OLD_USER)
     FIELD(quint64, userId)
-    FIELD(QByteArray, password)
+    FIELD(QString, password)
 };
 COMMAND(CS_INTERACTIVE_CHALLENGE_REPLY)
     FIELD(QString, challengeReply)

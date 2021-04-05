@@ -8,7 +8,9 @@ Page {
     id: root
     anchors.fill: parent
     title: qsTr('Login screen', 'title')
-
+    visible: opacity !== 0
+    enabled: visible
+    opacity: !controller.authorized
     readonly property int userId: controller.userId
 
     header: ToolBar {
@@ -24,19 +26,25 @@ Page {
         Button {
             Layout.fillWidth: true
             visible: root.userId != 0
-            text: qsTr('Login as #%1').arg(root.userId)
+            text: qsTr('Login as #%1 [wip]').arg(root.userId)
             Material.background: '#8bc34a'
-            onClicked: handshakeDialog.open()
+//            onClicked: handshakeDialog.open()
+            onClicked: {
+                loginAsOldUser.user = controller.userId
+                loginAsOldUser.open()
+            }
         }
         Button {
             Layout.fillWidth: true
             text: qsTr('Create and login as new user')
             Material.background: '#ff9800'
+            onClicked: setPasswordDialog.open()
         }
         Button {
             Layout.fillWidth: true
-            text: qsTr('Login as different user')
+            text: qsTr('Login as different user [wip]')
             Material.background: '#ff9800'
+            onClicked: loginAsOldUser.open()
         }
         Button {
             Layout.fillWidth: true
@@ -51,4 +59,11 @@ Page {
             Layout.fillHeight: true
         }
     }
+    SetPasswordDialog {
+        id: setPasswordDialog
+    }
+    OldUserDialog {
+        id: loginAsOldUser
+    }
+
 }

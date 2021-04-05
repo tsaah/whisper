@@ -35,6 +35,16 @@ protected slots:
     void onEncryptedCommandReceived(common::EncryptedCommand cmd) override;
     void onConnectionStateChanged(QAbstractSocket::SocketState state) override;
 
+    DECLARE_HANDLER(CS_HANDSHAKE_REQUEST, cmd);
+    DECLARE_HANDLER(CS_HANDSHAKE_SOLUTION, cmd);
+    DECLARE_HANDLER(CS_NEW_USER, cmd);
+    DECLARE_HANDLER(CS_OLD_USER, cmd);
+    DECLARE_HANDLER(CS_INTERACTIVE_CHALLENGE_REPLY, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST_COMPLETED, cmd);
+    DECLARE_HANDLER(CC_ADD_CONTACT_ACCEPT, cmd);
+    DECLARE_HANDLER(CC_MESSAGE, cmd);
+
 signals:
     void controllerClosed();
 
@@ -72,5 +82,7 @@ private:
 
 } // namespace server
 } // namespace whisper
+
+#define DEFINE_SERVER_HANDLER(c, v) void ServerController::handle_##c(const SerializedCommand &v)
 
 #endif // WHISPER_SERVER_SERVERCONTROLLER_H

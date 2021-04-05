@@ -73,4 +73,9 @@ private:
 } // namespace common
 } // namespace whisper
 
+#define HANDLE_COMMAND(c) case command::c: { handle_##c(cmd); } break
+
+#define DECLARE_HANDLER(c, v) void handle_##c(const common::SerializedCommand& v)
+
+
 #endif // CONTROLLER_H

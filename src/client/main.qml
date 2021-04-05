@@ -34,13 +34,23 @@ Window {
         readonly property int port: 12345
     }
 
+    Connections {
+        target: controller
+        function onAuthorizedChanged(authorized) {
+            if (authorized) {
+
+            } else {
+
+            }
+        }
+    }
 
     StackView {
         id: stackView
         anchors.fill: parent
         enabled: controller.connectionState === 3
 
-        initialItem: loginScreenComponent
+        initialItem: contactListScreenComponent
 
         pushEnter: Transition {
             PropertyAnimation {
@@ -81,13 +91,12 @@ Window {
     }
 
     Component {
-        id: loginScreenComponent
-        LoginScreen {}
+        id: contactListScreenComponent
+        ContactListScreen {
+
+        }
     }
-    Component {
-        id: lockScreenComponent
-        LockScreen {}
-    }
+
 
 
 
@@ -110,7 +119,9 @@ Window {
         id: handshakeDialog
     }
 
-    ConnectingWidget {}
 
+    LoginScreen {}
+//    LockScreen {}
     SplashScreen {}
+    ConnectingWidget {}
 }

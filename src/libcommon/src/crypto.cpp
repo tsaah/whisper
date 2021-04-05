@@ -28,7 +28,7 @@ QByteArray Crypto::generateSalt() {
     return r;
 }
 
-QByteArray Crypto::hashPassword(const QByteArray &password, const QByteArray &salt) {
+QByteArray Crypto::hashPassword(const QString &password, const QByteArray &salt) {
     const auto saltedPassword = salt + password;
     return QByteArray::number(qHash(saltedPassword));
 }

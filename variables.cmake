@@ -13,7 +13,8 @@ find_package(Qt5 COMPONENTS
     Qml
     Quick
     Sql
-#    Quickcontrols2
+    Widgets
+    QuickControls2
     REQUIRED
 )
 
@@ -24,7 +25,8 @@ set(QT_LIBS
     Qt5::Qml
     Qt5::Quick
     Qt5::Sql
-#    Qt5::Quickcontrols2
+    Qt5::Widgets
+    Qt5::QuickControls2
 )
 
 find_program(CCACHE_FOUND ccache)
