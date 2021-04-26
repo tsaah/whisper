@@ -92,7 +92,7 @@ void ClientSqliteDataStorage::storeUserId(quint64 userId) {
     QSqlQuery q(db());
     SQLASSERT(q.prepare("INSERT OR REPLACE INTO `userId_table` (`id`, `userId`) VALUES (1, :userId);"), "query preparation");
     q.bindValue(":userId", userId);
-    SQLASSERT(!q.exec(), "query exec");
+    SQLASSERT(q.exec(), "query exec");
 }
 
 void ClientSqliteDataStorage::clearUserId() {

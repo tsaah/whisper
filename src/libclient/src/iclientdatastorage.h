@@ -29,6 +29,8 @@ public:
     virtual quint64 restoreUserId() const = 0;
     virtual void storeUserId(quint64 userId) = 0;
     virtual void clearUserId() = 0;
+
+
 };
 
 } // namespace client

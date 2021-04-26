@@ -83,7 +83,8 @@ void ClientController::useOldUser(quint64 userId, const QString &password) {
 
 void ClientController::addContact(quint64 userId) {
     // store contact as pending
-    connection_->send(CC_ADD_CONTACT_REQUEST{ userId });
+//    connection_->send(CC_ADD_CONTACT_REQUEST{ userId });
+
 }
 
 void ClientController::confirmAddingContact(quint64 userId) {
