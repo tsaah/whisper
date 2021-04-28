@@ -2,6 +2,7 @@
 #define WHISPER_CLIENT_CLIENTCONTROLLER_H
 
 #include "libclient_export.h"
+#include "contactlistmodel.h"
 
 #include <controller.h>
 
@@ -15,6 +16,7 @@ class ClientSqliteDataStorage;
 class WHISPER_LIBCLIENT ClientController: public common::Controller {
     Q_OBJECT
     Q_PROPERTY(QAbstractSocket::SocketState connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(ContactListModel* contactListModel READ contactListModel NOTIFY contactListModelChanged)
 public:
     explicit ClientController(const QString& databaseFilename, QObject *parent = nullptr);
 
@@ -29,6 +31,7 @@ public slots:
     void confirmAddingContact(quint64 userId);
     void sendMessage(quint64 userId, const QString& message);
     void logout();
+    void requestAddContact(quint64 userId);
 
 signals:
     void handshakeChallenge(QString challenge);
@@ -64,15 +67,18 @@ private:
 
 public:
     QAbstractSocket::SocketState connectionState() const;
+    ContactListModel* contactListModel() const;
 
 private slots:
     void setConnectionState(QAbstractSocket::SocketState connectionState);
 
 signals:
     void connectionStateChanged(QAbstractSocket::SocketState connectionState);
+    void contactListModelChanged(ContactListModel* contactListModel);
 
 private:
     QAbstractSocket::SocketState connectionState_{ QAbstractSocket::UnconnectedState };
+    ContactListModel* contactListModel_;
 };
 
 } // namespace client

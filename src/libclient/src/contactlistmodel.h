@@ -1,31 +1,37 @@
 #ifndef CONTACTLISTMODEL_H
 #define CONTACTLISTMODEL_H
 
+#include "contact.h"
+
 #include <QAbstractItemModel>
-#include <QHash>
 
 namespace whisper {
 namespace client {
 
-class ContactListModel: public QAbstractItemModel {
+class ClientSqliteDataStorage;
+
+class WHISPER_LIBCLIENT ContactListModel: public QAbstractItemModel {
     Q_OBJECT
 public:
-    ContactListModel(QObject* parent = nullptr);
+    ContactListModel(ClientSqliteDataStorage* db, QObject* parent = nullptr);
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
 public slots:
-    void initializeModelFromStorage();
-    void saveModelToStorage();
-    void addContact(quint64 userId);
-    void removeContact(quint64 userId);
+    void initializeModelFromList(const QList<Contact> &contactList);
+    QList<Contact> getContactList() const;
+    void addContact(const Contact &contact);
+    void removeContact(const Contact &contact);
 
 private:
-    QHash<quint64, quint64> contactList_;
+    ClientSqliteDataStorage* db_{ nullptr };
+    QHash<quint64, Contact> contactHash_;
+    QHash<quint64, int> contactIndexHash_;
 };
 
 } // namespace client

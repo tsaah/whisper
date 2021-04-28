@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+#include <QTimeZone>
 
 namespace whisper {
 namespace client {
@@ -101,6 +102,62 @@ void ClientSqliteDataStorage::clearUserId() {
     SQLASSERT(q.exec(), "query exec");
 }
 
+void ClientSqliteDataStorage::cleanContactList() {
+    QSqlQuery q(db());
+    SQLASSERT(q.exec(R"(
+        DELETE FROM `contacts_table`;
+    )"), "query exec");
+}
+
+QList<Contact> ClientSqliteDataStorage::getContactList() const {
+    QSqlQuery q(db());
+    SQLASSERT(q.exec("SELECT `userId`, `certificate`, `approved`, `updateTimestamp` FROM `contacts_table` ORDER BY `updateTimestamp` DESC;"), "query exec");
+    QList<Contact> list;
+    while (q.next()) {
+        Contact c;
+        c.userId = q.value("userId").toULongLong();
+        c.certificate = q.value("certificate").toByteArray();
+        c.approved = q.value("approved").toBool();
+        c.updateTimestamp = QDateTime::fromMSecsSinceEpoch(q.value("updateTimestamp").toLongLong(), QTimeZone::systemTimeZone());
+        list.append(c);
+    }
+    return list;
+}
+
+void ClientSqliteDataStorage::storeContactList(const QList<Contact> &contactList) {
+    SQLDBASSERT(db().transaction(),"begin transaction");
+    QSqlQuery q(db());
+    SQLASSERT(q.exec("(DELETE FROM `contacts_table`;"), "query exec");
+    for (const auto& c: contactList) {
+        SQLASSERT(q.prepare("INSERT OR REPLACE INTO `contacts_table` (`userId`, `certificate`, `approved`, `updateTimestamp`) VALUES (:userId, :certificate, :approved, :updateTimestamp);"), "query preparation");
+        q.bindValue(":userId", c.userId);
+        q.bindValue(":certificate", c.certificate);
+        q.bindValue(":approved", c.approved);
+        q.bindValue(":updateTimestamp", c.updateTimestamp.toUTC().toMSecsSinceEpoch());
+        SQLASSERT(q.exec(), "query exec");
+    }
+    SQLDBASSERT(db().commit(), "commit transaction");
+}
+
+void ClientSqliteDataStorage::approveContact(quint64 userId, const QByteArray &certificate) {
+    QSqlQuery q(db());
+    SQLASSERT(q.exec("UPDATE `contacts_table` SET `certificate` = :certificate, `approved` = :approved, `updateTimestamp` = :updateTimestamp WHERE `userId` = :userId;"), "query exec");
+    q.bindValue(":userId", userId);
+    q.bindValue(":certificate", certificate);
+    q.bindValue(":approved", true);
+    q.bindValue(":updateTimestamp", QDateTime::currentDateTimeUtc().toMSecsSinceEpoch());
+    SQLASSERT(q.exec(), "query exec");
+}
+
+void ClientSqliteDataStorage::addUnapprovedContact(quint64 userId) {
+    QSqlQuery q(db());
+    SQLASSERT(q.prepare("INSERT OR REPLACE INTO `contacts_table` (`userId`, `approved`, `updateTimestamp`) VALUES (:userId, :approved, :updateTimestamp);"), "query preparation");
+    q.bindValue(":userId", userId);
+    q.bindValue(":approved", false);
+    q.bindValue(":updateTimestamp", QDateTime::currentDateTimeUtc().toMSecsSinceEpoch());
+    SQLASSERT(q.exec(), "query exec");
+}
+
 QSqlDatabase ClientSqliteDataStorage::db() const {
     if (!QSqlDatabase::contains(databaseFilename_)) {
         auto db = QSqlDatabase::addDatabase("QSQLITE", databaseFilename_);
@@ -138,9 +195,12 @@ void ClientSqliteDataStorage::createTables() {
     )"), "query exec");
 
     SQLASSERT(q.exec(R"(
-        CREATE TABLE IF NOT EXISTS `userId_table` (
+        CREATE TABLE IF NOT EXISTS `contacts_table` (
             `id` INTEGER PRIMARY KEY UNIQUE NOT NULL,
-            `userId` INT UNIQUE NOT NULL
+            `userId` INT UNIQUE NOT NULL,
+            `certificate` BLOB,
+            `approved` BOOL,
+            `updateTimestamp` INT
         );
     )"), "query exec");
 }

@@ -26,6 +26,12 @@ public:
     void storeUserId(quint64 userId) override;
     void clearUserId() override;
 
+    void cleanContactList() override;
+    QList<Contact> getContactList() const override;
+    void storeContactList(const QList<Contact>& contactList) override;
+    void approveContact(quint64 userId, const QByteArray& certificate) override;
+    void addUnapprovedContact(quint64 userId) override;
+
 private:
     QSqlDatabase db() const;
     void initialize();

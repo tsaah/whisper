@@ -15,6 +15,8 @@ ClientController::ClientController(const QString& databaseFilename, QObject *par
     setConnection(new Connection);
     db_ = new ClientSqliteDataStorage(databaseFilename, this);
 
+    contactListModel_ = new ContactListModel(db_, this);
+
     if (db_->isStoredDeviceCertificateEmpty()) {
         const auto deviceCert = Crypto::generateNewDeviceCertificate();
         setDeviceCertificate(deviceCert);
@@ -102,6 +104,13 @@ void ClientController::logout() {
     disconnectFromServer();
 }
 
+void ClientController::requestAddContact(quint64 userId) {
+    Contact c;
+    c.userId = userId;
+    c.updateTimestamp = QDateTime::currentDateTime();
+
+}
+
 void ClientController::onPlainCommandReceived(SerializedCommand cmd) {
     switch (cmd.id_) {
         HANDLE_COMMAND(SC_HANDSHAKE_REPLY);
@@ -170,6 +179,7 @@ DEFINE_CLIENT_HANDLER(SC_AUTHORIZED, cmd) {
     wDebug;
     if (!authorized()) {
         setAuthorized(true);
+//        contactListModel_->initializeModelFromStorage();
     }
 }
 
@@ -208,6 +218,10 @@ DEFINE_CLIENT_HANDLER(CC_MESSAGE, cmd) {
 
 QAbstractSocket::SocketState ClientController::connectionState() const {
     return connectionState_;
+}
+
+ContactListModel* ClientController::contactListModel() const {
+    return contactListModel_;
 }
 
 void ClientController::setConnectionState(QAbstractSocket::SocketState connectionState) {

@@ -1,6 +1,7 @@
 #ifndef ICLIENTDATASTORAGE_H
 #define ICLIENTDATASTORAGE_H
 
+#include "contact.h"
 #include "libclient_export.h"
 
 #include <datastorage.h>
@@ -30,6 +31,11 @@ public:
     virtual void storeUserId(quint64 userId) = 0;
     virtual void clearUserId() = 0;
 
+    virtual void cleanContactList() = 0;
+    virtual QList<Contact> getContactList() const = 0;
+    virtual void storeContactList(const QList<Contact>& contactList) = 0;
+    virtual void approveContact(quint64 userId, const QByteArray& certificate) = 0;
+    virtual void addUnapprovedContact(quint64 userId) = 0;
 
 };
 
