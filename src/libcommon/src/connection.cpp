@@ -1,11 +1,11 @@
-#include "connection.h"
 #include "log.h"
+
+#include "Connection.h"
 
 #include <QDataStream>
 #include <QDebug>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
 Connection::Connection(QObject* parent)
     : QSslSocket(parent)
@@ -15,14 +15,6 @@ Connection::Connection(QObject* parent)
 
 Connection::~Connection() {
     wDebug << "connection destroyed";
-}
-
-void Connection::send(const SerializedCommand &command) {
-    send(command.id_, command.data_, false);
-}
-
-void Connection::sendEncrypted(const EncryptedCommand &command) {
-    send(command.id_, command.data_, true);
 }
 
 void Connection::onAboutToClose() {
@@ -46,10 +38,9 @@ void Connection::onReadChannelFinished() {
 }
 
 void Connection::onReadyRead() {
-//    wDebug << socketDescriptor();
-
     if (bytesAvailable() <= 0) {
         wDebug << "some faulty shit is happening";
+        packetHeader_ = {};
         close();
         return;
     }
@@ -61,25 +52,28 @@ void Connection::onReadyRead() {
                 // too little data avaliable to even consider reading
                 // we expect data to remeain in socket until we will read it next time
                 // when more data will come
-                wWarn << "too little data";
+                packetHeader_ = {};
                 return;
             }
 
             packetHeader_ = *reinterpret_cast<PacketHeader*>(read(sizeof(PacketHeader)).data());
             if (packetHeader_.magic != PacketHeader::s_magic) {
                 wWarn << "incoming data had no correct magic";
+                packetHeader_ = {};
                 close();
                 return;
             }
 
             if (packetHeader_.payloadSize < 0 || packetHeader_.payloadSize > PacketHeader::s_maximumPayloadSize) {
                 wWarn << "incoming data had invalid payloadSize";
+                packetHeader_ = {};
                 close();
                 return;
             }
 
             if (packetHeader_.version < PacketHeader::s_minimumVersion) {
                 wWarn << "incoming packet version is too old to process";
+                packetHeader_ = {};
                 close();
                 return;
             }
@@ -98,19 +92,14 @@ void Connection::onReadyRead() {
         if ((packetHeader_.flags & 1) != 0) {
             payload = qUncompress(payload);
         }
-        const bool encrypted = (packetHeader_.flags & 2) != 0;
 
         const auto checksum = qChecksum(payload.constData(), payload.size(), PacketHeader::s_checksumType);
 
         if (packetHeader_.checksum == checksum) {
-//            wDebug << payload;
-            if (encrypted) {
-                emit encryptedCommandReceived({ packetHeader_.commandId, payload });
-            } else {
-                emit plainCommandReceived({ packetHeader_.commandId, payload });
-            }
+            emit packetRecieved(payload);
         } else {
             wWarn << "checksums didn't match";
+            packetHeader_ = {};
             close();
             return;
         }
@@ -172,12 +161,11 @@ void Connection::onSslErrors(const QList<QSslError> &errors) {
     wDebug;
 }
 
-void Connection::send(CommandId commandId, const QByteArray& payload, bool encrypted) {
+void Connection::send(const QByteArray& payload) {
     const auto payloadSize = payload.size();
     PacketHeader h;
     h.magic = PacketHeader::s_magic;
     h.checksum = qChecksum(payload.constData(), payloadSize, PacketHeader::s_checksumType);
-    h.commandId = commandId;
     h.version = PacketHeader::s_minimumVersion;
     h.flags = 0;
 
@@ -192,15 +180,10 @@ void Connection::send(CommandId commandId, const QByteArray& payload, bool encry
         h.payloadSize = payloadSize;
     }
 
-    if (encrypted) {
-        h.flags |= 2;
-    }
-
     const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
     const auto payloadWritten = write(compressed ? compressedPayload : payload);
 
 //    wDebug << socketDescriptor() << "sent packet:" << commandId << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
 }
 
-} // namespace common
-} // namespace whisper
+} // namespace whisper::common

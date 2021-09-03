@@ -1,9 +1,9 @@
-#ifndef STRINGHASH_H
-#define STRINGHASH_H
+#pragma once
 
 #include <QtGlobal>
 
 namespace whisper {
+
 namespace compileTimeHashImplementation {
 
 template<size_t N, size_t I=0>
@@ -29,5 +29,3 @@ constexpr size_t compiletimeStringHash ( const char (&s)[N] ) {
 }
 
 } // namespace whisper
-
-#endif // STRINGHASH_H

@@ -1,12 +1,10 @@
-#ifndef DATASTORAGE_H
-#define DATASTORAGE_H
+#pragma once
 
 #include "libcommon_export.h"
 
 #include <QObject>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
 class WHISPER_LIBCOMMON DataStorage: public QObject {
     Q_OBJECT
@@ -15,10 +13,4 @@ public:
     virtual ~DataStorage() = default;
 };
 
-} // namespace common
-} // namespace whisper
-
-#define SQLASSERT(statement, what) Q_ASSERT_X((statement), __FUNCTION__, QString("SQL Error %1: %2").arg(what).arg(q.lastError().text()).toUtf8());
-#define SQLDBASSERT(statement, what) Q_ASSERT_X((statement), __FUNCTION__, QString("SQL Error %1: %2").arg(what).arg(db().lastError().text()).toUtf8());
-
-#endif // DATASTORAGE_H
+} // namespace whisper::common

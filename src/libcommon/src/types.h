@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 #include <QByteArray>
 
@@ -28,5 +27,3 @@ using Flags = u32;
 using Checksum = u16;
 
 } // namespace whisper
-
-#endif // TYPES_H

@@ -33,7 +33,7 @@ macro(build_library targetName libType destinationPath)
 	${ADDITIONAL_INCLUDE_DIRECTORIES}
 #	${QT_INCLUDE_DIRS}
 #       ${CMAKE_CURRENT_BINARY_DIR}
-#       ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
     )
     set(LINK_LIBRARIES
         ${LINK_LIBRARIES}
@@ -81,7 +81,7 @@ macro(build_gui_application targetName)
         ${ADDITIONAL_INCLUDE_DIRECTORIES}
 #	${QT_INCLUDE_DIRS}
 #       ${CMAKE_CURRENT_BINARY_DIR}
-#       ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
     )
     set(LINK_LIBRARIES
         ${LINK_LIBRARIES}
@@ -127,7 +127,7 @@ macro(build_unit_test targetName)
         ${ADDITIONAL_INCLUDE_DIRECTORIES}
 #	${QT_INCLUDE_DIRS}
 #       ${CMAKE_CURRENT_BINARY_DIR}
-#       ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
     )
     set(LINK_LIBRARIES
         ${LINK_LIBRARIES}
@@ -161,7 +161,7 @@ macro(build_core_application targetName)
         ${ADDITIONAL_INCLUDE_DIRECTORIES}
 #	${QT_INCLUDE_DIRS}
 #       ${CMAKE_CURRENT_BINARY_DIR}
-#       ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
     )
     set(LINK_LIBRARIES
         ${LINK_LIBRARIES}

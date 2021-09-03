@@ -1,5 +1,4 @@
-#ifndef COMMON_EXPORT_H
-#define COMMON_EXPORT_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -8,5 +7,3 @@
 #else
     #define WHISPER_LIBCOMMON Q_DECL_IMPORT
 #endif
-
-#endif // COMMON_EXPORT_H

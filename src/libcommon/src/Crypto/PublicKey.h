@@ -4,7 +4,7 @@
 
 #include <QByteArray>
 
-namespace whisper::common {
+namespace whisper::common::crypto {
 
 using RSA_TYPE = void;
 
@@ -16,6 +16,7 @@ public:
     PublicKey(const QByteArray& key);
     PublicKey(const PrivateKey& key);
     ~PublicKey();
+
     bool fromByteArray(const QByteArray& key);
     QByteArray toByteArray() const;
     void clear();
@@ -26,4 +27,4 @@ private:
     QByteArray pem_;
 };
 
-} // namespace whisper::common
+} // namespace whisper::common::crypto

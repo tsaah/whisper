@@ -1,4 +1,4 @@
-#include "privatekey.h"
+#include "PrivateKey.h"
 
 #include <openssl/bio.h>
 #include <openssl/pem.h>
@@ -7,7 +7,7 @@
 #include <openssl/aes.h>
 #include <openssl/rsa.h>
 
-namespace whisper::common {
+namespace whisper::common::crypto {
 
 PrivateKey::PrivateKey(const QByteArray& key) {
     fromByteArray(key);
@@ -121,4 +121,5 @@ RSA_TYPE* PrivateKey::get() const {
     return key_;
 }
 
-} // namespace whisper::common
+} // namespace whisper::common::crypto
+

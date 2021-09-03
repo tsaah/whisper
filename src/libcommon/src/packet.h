@@ -1,18 +1,17 @@
-#ifndef PACKET_H
-#define PACKET_H
+#pragma once
 
-#include "types.h"
 #include "libcommon_export.h"
-#include "stringhash.h"
 #include "log.h"
-#include "crypto.h"
+#include "stringhash.h"
+#include "types.h"
+
+#include "Crypto/Crypto.h"
 
 #include <QDataStream>
 #include <QMetaObject>
 #include <QMetaProperty>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
 struct WHISPER_LIBCOMMON EncryptedCommand {
     CommandId id_;
@@ -144,8 +143,4 @@ COMMAND(CC_MESSAGE)
     FIELD(QByteArray, encryptedMessage)
 };
 
-
-} // namespace common
-} // namespace whisper
-
-#endif // PACKET_H
+} // namespace whisper::common

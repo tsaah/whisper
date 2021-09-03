@@ -1,14 +1,13 @@
-#ifndef SOCKET_H
-#define SOCKET_H
+#pragma once
 
 #include "libcommon_export.h"
 #include "types.h"
-#include "packet.h"
+
+#include "Packet.h"
 
 #include <QSslSocket>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
 class WHISPER_LIBCOMMON Connection: public QSslSocket {
     Q_OBJECT
@@ -17,12 +16,10 @@ public:
     ~Connection() override;
 
 public slots:
-    void send(const SerializedCommand& command);
-    void sendEncrypted(const EncryptedCommand& command);
+    void send(const QByteArray& payload);
 
 signals:
-    void plainCommandReceived(SerializedCommand);
-    void encryptedCommandReceived(EncryptedCommand);
+    void packetRecieved(QByteArray);
 
 private slots:
     void onAboutToClose();
@@ -52,7 +49,6 @@ private:
     struct PacketHeader {
         Magic magic{ 0 };
         Size payloadSize{ 0 };
-        CommandId commandId{ 0 };
         Version version{ 0 };
         Flags flags{ 0 };
         Checksum checksum{ 0 };
@@ -64,11 +60,6 @@ private:
         static constexpr auto s_compressionLevel{ 9 };
     } packetHeader_;
     #pragma pack(pop)
-
-    void send(CommandId commandId, const QByteArray& payload, bool encrypted);
 };
 
-} // namespace common
-} // namespace whisper
-
-#endif // SOCKET_H
+} // namespace whisper::common

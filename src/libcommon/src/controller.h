@@ -1,24 +1,24 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "libcommon_export.h"
-#include "packet.h"
-#include "crypto.h"
+
+#include "Packet.h"
+
+#include "Crypto/Crypto.h"
 
 #include <QAbstractSocket>
 #include <QObject>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
 class Connection;
 
 class WHISPER_LIBCOMMON Controller: public QObject {
     Q_OBJECT
-    Q_PROPERTY(Certificate deviceCertificate READ deviceCertificate WRITE setDeviceCertificate NOTIFY deviceCertificateChanged)
-    Q_PROPERTY(uint deviceCertificateHash READ deviceCertificateHash WRITE setDeviceCertificateHash NOTIFY deviceCertificateHashChanged)
-    Q_PROPERTY(Certificate userCertificate READ userCertificate WRITE setUserCertificate NOTIFY userCertificateChanged)
-    Q_PROPERTY(uint userCertificateHash READ userCertificateHash WRITE setUserCertificateHash NOTIFY userCertificateHashChanged)
+//    Q_PROPERTY(Certificate deviceCertificate READ deviceCertificate WRITE setDeviceCertificate NOTIFY deviceCertificateChanged)
+//    Q_PROPERTY(uint deviceCertificateHash READ deviceCertificateHash WRITE setDeviceCertificateHash NOTIFY deviceCertificateHashChanged)
+//    Q_PROPERTY(Certificate userCertificate READ userCertificate WRITE setUserCertificate NOTIFY userCertificateChanged)
+//    Q_PROPERTY(uint userCertificateHash READ userCertificateHash WRITE setUserCertificateHash NOTIFY userCertificateHashChanged)
     Q_PROPERTY(quint64 userId READ userId WRITE setUserId NOTIFY userIdChanged)
     Q_PROPERTY(bool authorized READ authorized WRITE setAuthorized NOTIFY authorizedChanged)
 public:
@@ -38,44 +38,40 @@ protected:
 
 
 public:
-    Certificate deviceCertificate() const;
-    uint deviceCertificateHash() const;
-    Certificate userCertificate() const;
-    uint userCertificateHash() const;
+//    Certificate deviceCertificate() const;
+//    uint deviceCertificateHash() const;
+//    Certificate userCertificate() const;
+//    uint userCertificateHash() const;
     quint64 userId() const;
     bool authorized() const;
 
 public slots:
-    void setDeviceCertificate(Certificate deviceCertificate);
-    void setDeviceCertificateHash(uint deviceCertificateHash);
-    void setUserCertificate(Certificate userCertificate);
-    void setUserCertificateHash(uint userCertificateHash);
+//    void setDeviceCertificate(Certificate deviceCertificate);
+//    void setDeviceCertificateHash(uint deviceCertificateHash);
+//    void setUserCertificate(Certificate userCertificate);
+//    void setUserCertificateHash(uint userCertificateHash);
     void setUserId(quint64 userId);
     void setAuthorized(bool authorized);
 
 signals:
-    void deviceCertificateChanged(Certificate deviceCertificate);
-    void deviceCertificateHashChanged(uint deviceCertificateHash);
-    void userCertificateChanged(Certificate userCertificate);
-    void userCertificateHashChanged(uint userCertificateHash);
+//    void deviceCertificateChanged(Certificate deviceCertificate);
+//    void deviceCertificateHashChanged(uint deviceCertificateHash);
+//    void userCertificateChanged(Certificate userCertificate);
+//    void userCertificateHashChanged(uint userCertificateHash);
     void userIdChanged(quint64 userId);
     void authorizedChanged(bool authorized);
 
 private:
-    Certificate deviceCertificate_;
-    uint deviceCertificateHash_{ 0 };
-    Certificate userCertificate_;
-    uint userCertificateHash_{ 0 };
+//    Certificate deviceCertificate_;
+//    uint deviceCertificateHash_{ 0 };
+//    Certificate userCertificate_;
+//    uint userCertificateHash_{ 0 };
     quint64 userId_{ 0 };
     bool authorized_{ false };
 };
 
-} // namespace common
-} // namespace whisper
+} // namespace whisper::common
 
 #define HANDLE_COMMAND(c) case command::c: { handle_##c(cmd); } break
 
 #define DECLARE_HANDLER(c, v) void handle_##c(const common::SerializedCommand& v)
-
-
-#endif // CONTROLLER_H
