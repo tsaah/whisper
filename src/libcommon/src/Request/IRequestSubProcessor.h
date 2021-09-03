@@ -4,8 +4,10 @@
 
 namespace whisper::common::request {
 
-class IRequestSubProcessor {
+class IRequestSubProcessor: public QObject {
+    Q_OBJECT
 public:
+    IRequestSubProcessor(QObject* parent = nullptr): QObject(parent) {}
     virtual ~IRequestSubProcessor() = default;
 
     virtual void processRequest(const RequestBasePtr& request) = 0;
@@ -15,6 +17,9 @@ protected:
     static inline QSharedPointer<T> makeResponseForRequest(const RequestBasePtr& request) {
         return new T;
     }
+
+signals:
+    // void finished();
 };
 
 using RequestSubProcessorPtr = QSharedPointer<IRequestSubProcessor>;

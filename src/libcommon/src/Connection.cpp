@@ -56,8 +56,8 @@ void Connection::onReadyRead() {
                 return;
             }
 
-            packetHeader_ = *reinterpret_cast<PacketHeader*>(read(sizeof(PacketHeader)).data());
-            if (packetHeader_.magic != PacketHeader::s_magic) {
+            const auto headerBytesRead = read(reinterpret_cast<char*>(&packetHeader_), sizeof(PacketHeader));
+            if (headerBytesRead != sizeof(PacketHeader) || packetHeader_.magic != PacketHeader::s_magic) {
                 wWarn << "incoming data had no correct magic";
                 packetHeader_ = {};
                 close();
@@ -78,8 +78,6 @@ void Connection::onReadyRead() {
                 return;
             }
             // if there will be backward compatibility packet version support we should do it here
-
-            // TODO: probably verify that command exists and could be received here
         }
         const auto bytesToReadAfterHeader = bytesAvailable();
 
@@ -183,7 +181,7 @@ void Connection::send(const QByteArray& payload) {
     const auto headWritten = write(reinterpret_cast<const char*>(&h), sizeof(PacketHeader));
     const auto payloadWritten = write(compressed ? compressedPayload : payload);
 
-//    wDebug << socketDescriptor() << "sent packet:" << commandId << "; headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
+    wDebug << socketDescriptor() << "sent data:" << " headWritten:" << headWritten << "; payloadWritten:" << payloadWritten;
 }
 
 } // namespace whisper::common

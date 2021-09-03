@@ -14,8 +14,8 @@ public:
     virtual ~IRequestProcessor() = default;
 
     virtual void processRequest(const RequestBasePtr& request) = 0;
-    virtual void addSubProcessor(RequestBase::RequestType requestType, const RequestSubProcessorPtr& subProcessor) = 0;
-    virtual void removeSubProcessor(RequestBase::RequestType requestType) = 0;
+    virtual void addSubProcessor(RequestType::Type requestType, const RequestSubProcessorPtr& subProcessor) = 0;
+    virtual void removeSubProcessor(RequestType::Type requestType) = 0;
     virtual void removeAllSubProcessors() = 0;
 };
 

@@ -16,11 +16,11 @@ void RequestProcessor::processRequest(const RequestBasePtr& request) {
     }
 }
 
-void RequestProcessor::addSubProcessor(RequestBase::RequestType requestType, const RequestSubProcessorPtr &subProcessor) {
+void RequestProcessor::addSubProcessor(RequestType::Type requestType, const RequestSubProcessorPtr &subProcessor) {
     subprocessorHash_.insert(requestType, subProcessor);
 }
 
-void RequestProcessor::removeSubProcessor(RequestBase::RequestType requestType) {
+void RequestProcessor::removeSubProcessor(RequestType::Type requestType) {
     subprocessorHash_.remove(requestType);
 }
 
@@ -28,7 +28,7 @@ void RequestProcessor::removeAllSubProcessors() {
     subprocessorHash_.clear();
 }
 
-RequestSubProcessorPtr RequestProcessor::getSubProcessorForRequest(RequestBase::RequestType requestType) const {
+RequestSubProcessorPtr RequestProcessor::getSubProcessorForRequest(RequestType::Type requestType) const {
     auto subProcessor = subprocessorHash_.value(requestType);
     if (!subProcessor) {
         wWarn << "We cannot handle that request type at the moment" << requestType;

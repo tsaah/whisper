@@ -121,5 +121,11 @@ RSA_TYPE* PrivateKey::get() const {
     return key_;
 }
 
+bool PrivateKey::isValid() const
+{
+    // TODO: key validation
+    return key_ != nullptr;
+}
+
 } // namespace whisper::common::crypto
 

@@ -81,4 +81,10 @@ RSA_TYPE *PublicKey::get() const {
     return key_;
 }
 
+bool PublicKey::isValid() const
+{
+    // TODO: key validation
+    return key_ != nullptr;
+}
+
 } // namespace whisper::common::crypto

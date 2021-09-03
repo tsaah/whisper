@@ -12,12 +12,12 @@ public:
     RequestProcessor();
 
     void processRequest(const RequestBasePtr& request) override;
-    void addSubProcessor(RequestBase::RequestType requestType, const RequestSubProcessorPtr& subProcessor) override;
-    void removeSubProcessor(RequestBase::RequestType requestType) override;
+    void addSubProcessor(RequestType::Type requestType, const RequestSubProcessorPtr& subProcessor) override;
+    void removeSubProcessor(RequestType::Type requestType) override;
     void removeAllSubProcessors();
 private:
-    RequestSubProcessorPtr getSubProcessorForRequest(RequestBase::RequestType requestType) const;
-    QHash<RequestBase::RequestType, RequestSubProcessorPtr> subprocessorHash_;
+    RequestSubProcessorPtr getSubProcessorForRequest(RequestType::Type requestType) const;
+    QHash<RequestType::Type, RequestSubProcessorPtr> subprocessorHash_;
 };
 
 } // namespace whisper::common::request

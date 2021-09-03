@@ -21,6 +21,7 @@ public:
     QByteArray toByteArray() const;
     void clear();
     RSA_TYPE* get() const;
+    bool isValid() const;
 
 private:
     RSA_TYPE* key_{ nullptr };

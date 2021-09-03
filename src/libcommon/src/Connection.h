@@ -3,8 +3,6 @@
 #include "libcommon_export.h"
 #include "types.h"
 
-#include "Packet.h"
-
 #include <QSslSocket>
 
 namespace whisper::common {
