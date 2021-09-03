@@ -1,4 +1,3 @@
-#include <clientcontroller.h>
 #include <log.h>
 
 #include <QGuiApplication>
@@ -8,7 +7,7 @@
 //#include <QQuickStyle>
 #include <QSslSocket>
 
-using namespace whisper::client;
+//using namespace whisper::client;
 
 //namespace {
 //    const auto glyphFont = ":/fonts/fontello.ttf";
@@ -35,10 +34,10 @@ int main(int argc, char** argv) {
 
     QQmlApplicationEngine engine;
 
-    ClientController controller("simpleclient_data_storage.sqlite");
+//    ClientController controller("simpleclient_data_storage.sqlite");
 
-    qmlRegisterUncreatableType<ClientController>("Whisper.Controller", 1, 0, "Controller", QString("Controller is uncratable"));
-    engine.rootContext()->setContextProperty("controller", &controller);
+//    qmlRegisterUncreatableType<ClientController>("Whisper.Controller", 1, 0, "Controller", QString("Controller is uncratable"));
+//    engine.rootContext()->setContextProperty("controller", &controller);
 
 
 //    c->connectToHost("127.0.0.1", 12345);

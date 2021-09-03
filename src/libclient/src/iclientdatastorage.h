@@ -1,15 +1,13 @@
-#ifndef ICLIENTDATASTORAGE_H
-#define ICLIENTDATASTORAGE_H
+#pragma once
 
-#include "contact.h"
 #include "libclient_export.h"
 
-#include <datastorage.h>
+#include "Contact.h"
+#include "DataStorage.h"
 
 #include <QSqlDatabase>
 
-namespace whisper {
-namespace client {
+namespace whisper::client {
 
 class WHISPER_LIBCLIENT IClientDataStorage: public common::DataStorage {
     Q_OBJECT
@@ -39,7 +37,4 @@ public:
 
 };
 
-} // namespace client
-} // namespace whisper
-
-#endif // ICLIENTDATASTORAGE_H
+} // namespace whisper::client

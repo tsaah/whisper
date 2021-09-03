@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material 2.15
-import Whisper.Controller 1.0
+//import Whisper.Controller 1.0
 
 Window {
     id: rootWindow
@@ -24,28 +24,28 @@ Window {
         id: state
     }
 
-    Connections {
-        target: controller
-        function onHandshakeChallenge(challenge) {
-            challengeBox.doshow = true
-            challengeBox.achallenge = challenge
-            challengeBox.aretry = 0
-        }
-        function onHandshakeRetry() {
-            ++challengeBox.aretry
-        }
-        function onHandshakeSuccessfull() {
-            challengeBox.doshow = false
-            challengeBox.achallenge = ''
-            challengeBox.aretry = 0
-        }
-        function onContactRequest(userId) {
-            console.log('contact request from' + String(userId))
-        }
-        function onContactAccepted(userId) {
-            console.log('contact request accepted from' + String(userId))
-        }
-    }
+//    Connections {
+//        target: controller
+//        function onHandshakeChallenge(challenge) {
+//            challengeBox.doshow = true
+//            challengeBox.achallenge = challenge
+//            challengeBox.aretry = 0
+//        }
+//        function onHandshakeRetry() {
+//            ++challengeBox.aretry
+//        }
+//        function onHandshakeSuccessfull() {
+//            challengeBox.doshow = false
+//            challengeBox.achallenge = ''
+//            challengeBox.aretry = 0
+//        }
+//        function onContactRequest(userId) {
+//            console.log('contact request from' + String(userId))
+//        }
+//        function onContactAccepted(userId) {
+//            console.log('contact request accepted from' + String(userId))
+//        }
+//    }
 
 
     Material.theme: Material.Dark

@@ -1,10 +1,8 @@
-#ifndef CLIENTSQLITEDATASTORAGE_H
-#define CLIENTSQLITEDATASTORAGE_H
+#pragma once
 
-#include "iclientdatastorage.h"
+#include "IClientDataStorage.h"
 
-namespace whisper {
-namespace client {
+namespace whisper::client {
 
 class WHISPER_LIBCLIENT ClientSqliteDataStorage: public IClientDataStorage {
     Q_OBJECT
@@ -41,7 +39,4 @@ private:
     QString databaseFilename_;
 };
 
-} // namespace client
-} // namespace whisper
-
-#endif // CLIENTSQLITEDATASTORAGE_H
+} // namespace whisper::client

@@ -1,5 +1,4 @@
-#ifndef CLIENT_EXPORT_H
-#define CLIENT_EXPORT_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -8,5 +7,3 @@
 #else
     #define WHISPER_LIBCLIENT Q_DECL_IMPORT
 #endif
-
-#endif // CLIENT_EXPORT_H

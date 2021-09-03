@@ -1,12 +1,11 @@
-#include "clientsqlitedatastorage.h"
+#include "ClientSqliteDataStorage.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
 #include <QTimeZone>
 
-namespace whisper {
-namespace client {
+namespace whisper::client {
 
 ClientSqliteDataStorage::ClientSqliteDataStorage(const QString& databaseFilename, QObject *parent)
     : IClientDataStorage(parent)
@@ -205,6 +204,4 @@ void ClientSqliteDataStorage::createTables() {
     )"), "query exec");
 }
 
-
-} // namespace client
-} // namespace whisper
+} // namespace whisper::client

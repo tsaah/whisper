@@ -1,12 +1,10 @@
-#ifndef CONTACT_H
-#define CONTACT_H
+#pragma once
 
 #include "libclient_export.h"
 
 #include <QDateTime>
 
-namespace whisper {
-namespace client {
+namespace whisper::client {
 
 struct WHISPER_LIBCLIENT Contact {
     quint64 userId{ 0 };
@@ -15,7 +13,4 @@ struct WHISPER_LIBCLIENT Contact {
     QDateTime updateTimestamp;
 };
 
-} // namespace client
-} // namespace whisper
-
-#endif // CONTACT_H
+} // namespace whisper::client

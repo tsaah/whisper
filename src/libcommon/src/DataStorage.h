@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libcommon_export.h"
+#include "log.h"
 
 #include <QObject>
 
@@ -14,3 +15,6 @@ public:
 };
 
 } // namespace whisper::common
+
+#define SQLASSERT(v, s) wError << (v) << s;
+#define SQLDBASSERT(v, s) wError << (v) << s;

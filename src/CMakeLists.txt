@@ -5,9 +5,9 @@ add_custom_target(libs_misc_files SOURCES
 )
 
 add_subdirectory(libcommon)
-add_subdirectory(libserver)
+#add_subdirectory(libserver)
 add_subdirectory(libclient)
-add_subdirectory(server)
-add_subdirectory(visualserver)
-add_subdirectory(client)
+#add_subdirectory(server)
+#add_subdirectory(visualserver)
+#add_subdirectory(client)
 add_subdirectory(simpleclient)
