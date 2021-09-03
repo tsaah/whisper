@@ -1,27 +1,24 @@
-#ifndef CRYPTO_H
-#define CRYPTO_H
+#pragma once
 
 #include "libcommon_export.h"
 
 #include <QByteArray>
-#include <QPair>
 
-namespace whisper {
-namespace common {
+namespace whisper::common {
 
-using Certificate = QByteArray;
+class PrivateKey;
+class PublicKey;
 
 class WHISPER_LIBCOMMON Crypto {
 public:
-    static Certificate generateNewDeviceCertificate();
-    static Certificate generateNewUserCertificate();
+    static QByteArray generateRandomByteArray(int size);
     static QByteArray generateSalt();
-    static QByteArray hashPassword(const QString& password, const QByteArray& salt);
-    static QPair<QString, QString> generateChallengeResponse();
-    static quint64 generateNewUserId();
+    static QByteArray encryptAES(const QByteArray& source, const QByteArray& key);
+    static QByteArray decryptAES(const QByteArray& source, const QByteArray& key);
+    static QByteArray encryptRSA(const QByteArray& source, const PublicKey& publicKey);
+    static QByteArray decryptRSA(const QByteArray& source, const PrivateKey& privateKey);
+    static QByteArray signRSA(const QByteArray& source, const PrivateKey& privateKey);
+    static bool verifyRSA(const QByteArray& source, const PublicKey& publicKey, const QByteArray& signature);
 };
 
-} // namespace common
-} // namespace whisper
-
-#endif // CRYPTO_H
+} // namespace whisper::common
