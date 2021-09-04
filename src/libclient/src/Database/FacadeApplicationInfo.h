@@ -23,7 +23,7 @@ public:
 protected:
     void createTable() override;
     bool hasTable() const override;
-    void load(const QByteArray &password) const override;
+    void load(const QByteArray& password) const override;
 
 private:
     QSqlDatabase db_;

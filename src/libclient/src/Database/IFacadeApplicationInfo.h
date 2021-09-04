@@ -30,7 +30,7 @@ public:
 protected:
     virtual void createTable() = 0;
     virtual bool hasTable() const = 0;
-    virtual void load() const = 0;
+    virtual void load(const QByteArray& password) const = 0;
 };
 
 } // namespace whisper::client

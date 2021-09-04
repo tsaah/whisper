@@ -21,7 +21,7 @@ FacadeApplicationInfo::FacadeApplicationInfo(QSqlDatabase& db, const QByteArray&
     Q_ASSERT(db_.isValid());
     Q_ASSERT(db_.open());
     createTable();
-    load();
+    load(password);
 }
 
 void FacadeApplicationInfo::clearTable() {
@@ -46,6 +46,19 @@ void FacadeApplicationInfo::clearTable() {
     userId_ = 0;
     passwordSalt_.clear();
     passwordHash_.clear();
+}
+
+bool FacadeApplicationInfo::checkPassword(const QByteArray &password) const {
+    if (password.isEmpty()) {
+        return false;
+    }
+
+    QByteArray saltedPassword;
+    saltedPassword.append(passwordSalt_);
+    saltedPassword.append(password);
+    const auto passwordHash = common::crypto::Crypto::secureHash(saltedPassword);
+    saltedPassword.fill('\0');
+    return passwordHash == passwordHash_;
 }
 
 void FacadeApplicationInfo::resetPasswordAndClear(const QByteArray &password) {
@@ -81,14 +94,6 @@ bool FacadeApplicationInfo::changePassword(const QByteArray &oldPassword, const 
         return false;
     }
 
-    const auto newPasswordSalt = common::crypto::Crypto::generateSalt();
-    QByteArray saltedPassword;
-    saltedPassword.append(newPasswordSalt);
-    saltedPassword.append(newPassword);
-    const auto newPasswordHash = common::crypto::Crypto::secureHash(saltedPassword);
-
-    if (deviceKey_.isValid()) {
-
     QSqlQuery q(db_);
 
     SQL_ASSERT(q.prepare(R"(
@@ -101,12 +106,33 @@ bool FacadeApplicationInfo::changePassword(const QByteArray &oldPassword, const 
     q.bindValue(":tableName", TABLE_NAME);
     q.bindValue(":staticId", STATIC_ID);
 
-
+    const auto newPasswordSalt = common::crypto::Crypto::generateSalt();
     q.bindValue(":passwordSalt", newPasswordSalt);
-    q.bindValue(":passwordHash", passwordHash);
+
+    QByteArray saltedPassword;
+    saltedPassword.append(newPasswordSalt);
+    saltedPassword.append(newPassword);
+    const auto newPasswordHash = common::crypto::Crypto::secureHash(saltedPassword);
     saltedPassword.fill('\0');
+    q.bindValue(":passwordHash", newPasswordHash);
+
+    if (deviceKey_.isValid()) {
+        const auto encryptedDeviceKey = common::crypto::Crypto::encryptAES(deviceKey_.toByteArray(), newPassword);
+        q.bindValue(":encryptedDeviceKey", encryptedDeviceKey);
+    } else {
+        q.bindValue(":encryptedDeviceKey", QVariant(QVariant::ByteArray));
+    }
+
+    if (userKey_.isValid()) {
+        const auto encryptedUserKey = common::crypto::Crypto::encryptAES(userKey_.toByteArray(), newPassword);
+        q.bindValue(":encryptedUserKey", encryptedUserKey);
+    } else {
+        q.bindValue(":encryptedUserKey", QVariant(QVariant::ByteArray));
+    }
 
     SQL_ASSERT(q.exec(), q);
+
+    return true;
 }
 
 void FacadeApplicationInfo::setDeviceKey(const common::crypto::PrivateKey &key, const QByteArray &password) {
