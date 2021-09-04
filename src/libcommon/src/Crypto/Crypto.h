@@ -13,6 +13,7 @@ class WHISPER_LIBCOMMON Crypto {
 public:
     static QByteArray generateRandomByteArray(int size);
     static QByteArray generateSalt();
+    static QByteArray secureHash(const QByteArray& source);
     static QByteArray encryptAES(const QByteArray& source, const QByteArray& key);
     static QByteArray decryptAES(const QByteArray& source, const QByteArray& key);
     static QByteArray encryptRSA(const QByteArray& source, const PublicKey& publicKey);

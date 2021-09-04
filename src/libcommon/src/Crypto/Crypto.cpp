@@ -2,6 +2,8 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
+#include <QHash>
+
 #include <openssl/bio.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
@@ -21,6 +23,11 @@ QByteArray Crypto::generateRandomByteArray(int size) {
 
 QByteArray Crypto::generateSalt() {
     return generateRandomByteArray(PKCS5_SALT_LEN);
+}
+
+QByteArray Crypto::secureHash(const QByteArray &source) {
+    // TODO: use sha256 to generate secure hash;
+    return QByteArray::number(qHash(source));
 }
 
 QByteArray Crypto::encryptAES(const QByteArray& source, const QByteArray& key) {
