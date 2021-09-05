@@ -1,12 +1,10 @@
-#ifndef ISERVERCONNECTIONFACTORY_H
-#define ISERVERCONNECTIONFACTORY_H
+#pragma once
 
 #include "libserver_export.h"
 
 class QTcpSocket;
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class WHISPER_LIBSERVER IServerConnectionFactory {
 public:
@@ -14,7 +12,4 @@ public:
     virtual QTcpSocket* create(qintptr handle) = 0;
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // ISERVERCONNECTIONFACTORY_H
+} // namespace whisper::server

@@ -1,4 +1,4 @@
-#include "serversqlitedatastorage.h"
+#include "ServerSqliteDataStorage.h"
 
 #include <types.h>
 #include <log.h>
@@ -8,8 +8,7 @@
 #include <QSqlError>
 #include <QVariant>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 ServerSqliteDataStorage::ServerSqliteDataStorage(QObject *parent): IServerDataStorage(parent) {
     initialize();
@@ -160,7 +159,6 @@ void ServerSqliteDataStorage::createTables() {
     )"), "query exec");
 }
 
-} // namespace server
-} // namespace whisper
+} // namespace whisper::server
 
 

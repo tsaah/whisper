@@ -1,8 +1,6 @@
-#pragma once
-
 #include "FacadeApplicationInfo.h"
-#include <Crypto/Crypto.h>
 
+#include <Crypto/Crypto.h>
 #include <sqlassert.h>
 
 #include <QSqlQuery>
@@ -131,6 +129,9 @@ bool FacadeApplicationInfo::changePassword(const QByteArray &oldPassword, const 
     }
 
     SQL_ASSERT(q.exec(), q);
+
+    passwordHash_ = newPasswordHash;
+    passwordSalt_ = newPasswordSalt;
 
     return true;
 }

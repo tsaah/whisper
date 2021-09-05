@@ -1,10 +1,10 @@
-#include <connection.h>
-#include <controller.h>
-#include <dispatcher.h>
+#include <Connection.h>
+//#include <Controller.h>
+#include <Dispatcher.h>
 #include <log.h>
-#include <server.h>
-#include <serverconnectionfactory.h>
-#include <servermodel.h>
+#include <Server.h>
+#include <ServerConnectionFactory.h>
+#include <ServerModel.h>
 
 #include <QApplication>
 #include <QTreeView>
@@ -15,8 +15,6 @@ using namespace whisper::server;
 
 
 int main(int argc, char** argv) {
-    qsrand(QDateTime::currentMSecsSinceEpoch());
-
     QApplication application(argc, argv);
 
     ServerConnectionFactory socketFactory;

@@ -1,14 +1,12 @@
-#ifndef ISERVERDATASTORAGE_H
-#define ISERVERDATASTORAGE_H
+#pragma once
 
 #include "libserver_export.h"
 
-#include <datastorage.h>
+#include <DataStorage.h>
 
 #include <QSqlDatabase>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class WHISPER_LIBSERVER IServerDataStorage: public common::DataStorage {
     Q_OBJECT
@@ -24,10 +22,6 @@ public:
     virtual QByteArray getUserCertificate(quint64 userId) const = 0;
     virtual QByteArray getPasswordHash(quint64 userId) const = 0;
     virtual QByteArray getPasswordSalt(quint64 userId) const = 0;
-
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // ISERVERDATASTORAGE_H
+} // namespace whisper::server

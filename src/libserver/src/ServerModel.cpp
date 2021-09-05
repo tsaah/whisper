@@ -1,9 +1,8 @@
-#include "servermodel.h"
-#include "dispatcher.h"
-#include "servercontroller.h"
+#include "ServerModel.h"
+#include "Dispatcher.h"
+#include "ServerController.h"
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 ServerModel::ServerModel(Dispatcher *dispatcher, QObject* parent)
     : QAbstractItemModel(parent)
@@ -120,8 +119,6 @@ void ServerModel::onControllerRemoved(ServerController *controller) {
 //    endResetModel();
 }
 
-} // namespace server
-} // namespace whisper
-
+} // namespace whisper::server
 
 

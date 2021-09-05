@@ -1,10 +1,8 @@
-#ifndef SERVERSQLITEDATASTORAGE_H
-#define SERVERSQLITEDATASTORAGE_H
+#pragma once
 
-#include "iserverdatastorage.h"
+#include "IServerDataStorage.h"
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class WHISPER_LIBSERVER ServerSqliteDataStorage: public IServerDataStorage {
     Q_OBJECT
@@ -28,7 +26,4 @@ private:
     void createTables();
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // SERVERSQLITEDATASTORAGE_H
+} // namespace whisper::server

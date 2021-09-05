@@ -1,9 +1,8 @@
-#include "serverconnectionfactory.h"
+#include "ServerConnectionFactory.h"
 
-#include <connection.h>
+#include <Connection.h>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 QTcpSocket *ServerConnectionFactory::create(qintptr handle) {
     auto* socket = new common::Connection;
@@ -13,5 +12,4 @@ QTcpSocket *ServerConnectionFactory::create(qintptr handle) {
     return nullptr;
 }
 
-} // namespace server
-} // namespace whisper
+} // namespace whisper::server

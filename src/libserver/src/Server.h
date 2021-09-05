@@ -1,12 +1,10 @@
-#ifndef SERVER_H
-#define SERVER_H
+#pragma once
 
 #include "libserver_export.h"
 
 #include <QTcpServer>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class IServerConnectionFactory;
 
@@ -22,7 +20,4 @@ private:
     IServerConnectionFactory* socketFactory_{ nullptr };
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // SERVER_H
+} // namespace whisper::server

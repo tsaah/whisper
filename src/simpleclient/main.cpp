@@ -14,8 +14,6 @@
 //}
 
 int main(int argc, char** argv) {
-    qsrand(QDateTime::currentMSecsSinceEpoch());
-
     if (!QSslSocket::supportsSsl()) {
         wError << "no openssl support";
         return -1;

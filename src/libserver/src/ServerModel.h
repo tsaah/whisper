@@ -1,13 +1,10 @@
-#ifndef SERVERMODEL_H
-#define SERVERMODEL_H
+#pragma once
 
 #include "libserver_export.h"
 
-
 #include <QAbstractItemModel>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class Dispatcher;
 class ServerController;
@@ -90,7 +87,4 @@ private:
     Item* rootItem_{ nullptr };
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // SERVERMODEL_H
+} // namespace whisper::server

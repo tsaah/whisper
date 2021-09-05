@@ -1,23 +1,20 @@
-#ifndef DISPATCHER_H
-#define DISPATCHER_H
+#pragma once
 
 #include "libserver_export.h"
 
-#include <crypto.h>
+#include <Crypto/Crypto.h>
 
 #include <QHash>
 #include <QSet>
 #include <QObject>
 
-namespace whisper {
-
-namespace common {
+namespace whisper::common {
 
 class Connection;
 
-} // namespace common
+} // namespace whisper::common
 
-namespace server {
+namespace whisper::server {
 
 class ServerController;
 class ServerSqliteDataStorage;
@@ -48,7 +45,4 @@ private:
     ServerSqliteDataStorage* db_{ nullptr };
 };
 
-} // namespace server
-} // namespace whisper
-
-#endif // DISPATCHER_H
+} // namespace whisper::server

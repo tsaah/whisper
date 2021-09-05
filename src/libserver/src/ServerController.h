@@ -1,9 +1,8 @@
-#ifndef WHISPER_SERVER_SERVERCONTROLLER_H
-#define WHISPER_SERVER_SERVERCONTROLLER_H
+#pragma once
 
 #include "libserver_export.h"
 
-#include <controller.h>
+#include <Connection.h>
 
 #include <QObject>
 #include <QTimer>
@@ -12,13 +11,12 @@
 
 using namespace std::chrono_literals;
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 class ServerSqliteDataStorage;
 class Dispatcher;
 
-class WHISPER_LIBSERVER ServerController: public common::Controller {
+class WHISPER_LIBSERVER ServerController final: public QObject {
     Q_OBJECT
     Q_PROPERTY(bool handshakeSuccessfull READ handshakeSuccessfull WRITE setHandshakeSuccessfull NOTIFY handshakeSuccessfullChanged)
     Q_PROPERTY(int handshakeRetryCount READ handshakeRetryCount WRITE setHandshakeRetryCount NOTIFY handshakeRetryCountChanged)
@@ -31,19 +29,8 @@ public:
     void stopKillTimer();
 
 protected slots:
-    void onPlainCommandReceived(common::SerializedCommand cmd) override;
-    void onEncryptedCommandReceived(common::EncryptedCommand cmd) override;
-    void onConnectionStateChanged(QAbstractSocket::SocketState state) override;
-
-    DECLARE_HANDLER(CS_HANDSHAKE_REQUEST, cmd);
-    DECLARE_HANDLER(CS_HANDSHAKE_SOLUTION, cmd);
-    DECLARE_HANDLER(CS_NEW_USER, cmd);
-    DECLARE_HANDLER(CS_OLD_USER, cmd);
-    DECLARE_HANDLER(CS_INTERACTIVE_CHALLENGE_REPLY, cmd);
-    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST, cmd);
-    DECLARE_HANDLER(CC_ADD_CONTACT_REQUEST_COMPLETED, cmd);
-    DECLARE_HANDLER(CC_ADD_CONTACT_ACCEPT, cmd);
-    DECLARE_HANDLER(CC_MESSAGE, cmd);
+    void onRequestReceived(const QByteArray& request);
+    void onConnectionStateChanged(QAbstractSocket::SocketState state);
 
 signals:
     void controllerClosed();
@@ -80,9 +67,6 @@ private:
     QString handshakeChallenge_;
 };
 
-} // namespace server
-} // namespace whisper
+} // namespace whisper::server
 
 #define DEFINE_SERVER_HANDLER(c, v) void ServerController::handle_##c(const SerializedCommand &v)
-
-#endif // WHISPER_SERVER_SERVERCONTROLLER_H

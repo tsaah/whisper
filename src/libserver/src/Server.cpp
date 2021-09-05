@@ -1,11 +1,11 @@
-#include "server.h"
-#include "iserverconnectionfactory.h"
-#include "log.h"
+#include "Server.h"
+#include "IServerConnectionFactory.h"
+
+#include <log.h>
 
 #include <QTcpSocket>
 
-namespace whisper {
-namespace server {
+namespace whisper::server {
 
 Server::Server(IServerConnectionFactory *socketFactory, QObject *parent)
     : QTcpServer(parent)
@@ -20,5 +20,4 @@ void Server::incomingConnection(qintptr handle) {
     }
 }
 
-} // namespace server
-} // namespace whisper
+} // namespace whisper::server

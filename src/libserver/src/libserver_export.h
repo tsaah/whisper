@@ -1,5 +1,4 @@
-#ifndef SERVER_EXPORT_H
-#define SERVER_EXPORT_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -8,5 +7,3 @@
 #else
     #define WHISPER_LIBSERVER Q_DECL_IMPORT
 #endif
-
-#endif // SERVER_EXPORT_H

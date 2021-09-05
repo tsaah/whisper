@@ -1,5 +1,3 @@
-#pragma once
-
 #include "RequestFactory.h"
 #include "CSRequestNewUserConnect.h"
 

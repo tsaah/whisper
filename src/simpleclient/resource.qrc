@@ -2,5 +2,10 @@
     <qresource prefix="/"/>
     <qresource prefix="/qml">
         <file>main.qml</file>
+        <file>LoginScreen.qml</file>
+        <file>FirstTimeSetPassword.qml</file>
+        <file>WaitGeneratingKeys.qml</file>
+        <file>UserTypeSelection.qml</file>
+        <file>UserVerification.qml</file>
     </qresource>
 </RCC>

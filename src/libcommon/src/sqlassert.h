@@ -13,4 +13,5 @@
     const auto lastError = db.lastError(); \
     const auto what = QString("(%1) %2").arg(QString::number(lastError.type()), lastError.text()); \
     Q_ASSERT_X((q), qPrintable(where), qPrintable(what)); \
-} \
+}
+
