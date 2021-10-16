@@ -14,7 +14,6 @@ public:
 
     QByteArray serialize() const;
     bool deserialize(const QByteArray& byteArray);
-    static RequestType::Type prefetchRequestType(const QByteArray& byteArray);
 
     RequestType::Type requestType() const;
 

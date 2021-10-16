@@ -72,11 +72,19 @@ void Connection::onReadyRead() {
             }
 
             if (packetHeader_.version < PacketHeader::s_minimumVersion) {
-                wWarn << "incoming packet version is too old to process";
+                wWarn << "incoming request version is too old to process";
                 packetHeader_ = {};
                 close();
                 return;
             }
+
+            if (packetHeader_.requestType == request::RequestType::Type::Unknown) {
+                wWarn << "incoming request type is is unknown";
+                packetHeader_ = {};
+                close();
+                return;
+            }
+
             // if there will be backward compatibility packet version support we should do it here
         }
         const auto bytesToReadAfterHeader = bytesAvailable();
@@ -94,7 +102,7 @@ void Connection::onReadyRead() {
         const auto checksum = qChecksum(payload.constData(), payload.size(), PacketHeader::s_checksumType);
 
         if (packetHeader_.checksum == checksum) {
-            emit packetRecieved(payload);
+            emit requestRecieved(packetHeader_.requestType, payload);
         } else {
             wWarn << "checksums didn't match";
             packetHeader_ = {};
@@ -159,12 +167,14 @@ void Connection::onSslErrors(const QList<QSslError> &errors) {
     wDebug;
 }
 
-void Connection::send(const QByteArray& payload) {
+void Connection::send(request::RequestBasePtr request) {
+    const auto payload = request->serialize();
     const auto payloadSize = payload.size();
     PacketHeader h;
     h.magic = PacketHeader::s_magic;
     h.checksum = qChecksum(payload.constData(), payloadSize, PacketHeader::s_checksumType);
     h.version = PacketHeader::s_minimumVersion;
+    h.requestType = request->requestType();
     h.flags = 0;
 
     bool compressed = false;

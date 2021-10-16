@@ -5,6 +5,10 @@
 #include <Server.h>
 #include <ServerConnectionFactory.h>
 #include <ServerModel.h>
+#include <Request/RequestProcessor.h>
+#include <Request/RequestFactory.h>
+#include <Request/RequestProtocolConverter.h>
+#include <Request/SubprocessorCSRequestNewUserConnect.h>
 
 #include <QApplication>
 #include <QTreeView>
@@ -28,11 +32,20 @@ int main(int argc, char** argv) {
     }
 
     auto* dispatcher = new Dispatcher(&application);
+    auto* requestProcessor = new request::RequestProcessor;
+    requestProcessor->addSubprocessor(request::RequestType::CSNewUserConnect, request::SubprocessorCSRequestNewUserConnectPtr::create());
+    auto requestFactory = request::RequestFactoryPtr::create();
+    auto* protocolConverter = new request::RequestProtocolConverter(requestFactory);
 
     wDebug << "listening";
-    QObject::connect(server, &Server::newConnection, [server, dispatcher]{
+    QObject::connect(server, &Server::newConnection, server, [server, dispatcher, requestProcessor, protocolConverter]{
         wDebug << "new connection";
         auto* connection = reinterpret_cast<Connection*>(server->nextPendingConnection());
+        QObject::connect(connection, &Connection::requestRecieved, connection, [connection, requestProcessor, protocolConverter](request::RequestType::Type requestType, QByteArray payload){
+            wDebug << "incoming request" << requestType;
+            const auto request = protocolConverter->deserializeRequest(requestType, payload);
+            requestProcessor->processRequest(request);
+        });
         dispatcher->addConnection(connection);
     });
 

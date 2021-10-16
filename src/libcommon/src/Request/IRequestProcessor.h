@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IRequestSubProcessor.h"
+#include "IRequestSubprocessor.h"
 #include "RequestBase.h"
 
 #include <QSharedPointer>
@@ -14,9 +14,9 @@ public:
     virtual ~IRequestProcessor() = default;
 
     virtual void processRequest(const RequestBasePtr& request) = 0;
-    virtual void addSubProcessor(RequestType::Type requestType, const RequestSubProcessorPtr& subProcessor) = 0;
-    virtual void removeSubProcessor(RequestType::Type requestType) = 0;
-    virtual void removeAllSubProcessors() = 0;
+    virtual void addSubprocessor(RequestType::Type requestType, const RequestSubprocessorPtr& subprocessor) = 0;
+    virtual void removeSubprocessor(RequestType::Type requestType) = 0;
+    virtual void removeAllSubprocessors() = 0;
 };
 
 using RequestProcessorPtr = QSharedPointer<IRequestProcessor>;

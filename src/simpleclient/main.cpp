@@ -6,7 +6,15 @@
 #include <QQmlContext>
 //#include <QQuickStyle>
 #include <QSslSocket>
+#include <Connection.h>
 
+#include <Crypto/Crypto.h>
+#include <Crypto/PrivateKey.h>
+#include <Crypto/PublicKey.h>
+
+#include <Request/RequestFactory.h>
+#include <Request/CSRequestNewUserConnect.h>
+#include <Request/RequestProtocolConverter.h>
 //using namespace whisper::client;
 
 //namespace {
@@ -18,6 +26,13 @@ int main(int argc, char** argv) {
         wError << "no openssl support";
         return -1;
     }
+
+    whisper::common::crypto::PrivateKey clientKey;
+    clientKey.generate();
+    whisper::common::crypto::PublicKey clientPublicKey(clientKey);
+    whisper::common::crypto::PrivateKey deviceKey;
+    deviceKey.generate();
+    whisper::common::crypto::PublicKey devicePublicKey(deviceKey);
 
 
     QGuiApplication::setApplicationName("Whisper");
@@ -38,7 +53,16 @@ int main(int argc, char** argv) {
 //    engine.rootContext()->setContextProperty("controller", &controller);
 
 
-//    c->connectToHost("127.0.0.1", 12345);
+    whisper::common::Connection c;
+    c.connectToHost("127.0.0.1", 12345);
+    {
+        auto request = whisper::common::request::CSRequestNewUserConnectPtr::create();
+        request->clientKey = clientPublicKey;
+        request->deviceKey = devicePublicKey;
+        c.send(request);
+    }
+
+
 
 //    c->send(CS_HANDSHAKE_REQUEST{ "device cert 2", 11, 12, 13 });
 

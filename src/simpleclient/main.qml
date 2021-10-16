@@ -61,7 +61,7 @@ Window {
 
 
         Component.onCompleted: {
-            controller.connectToServer(defaults.host, defaults.port)
+//            controller.connectToServer(defaults.host, defaults.port)
         }
 
         ColumnLayout {
@@ -73,13 +73,13 @@ Window {
                 property var texts: [ 'unconnected', 'host lookup', 'connecting', 'connected', 'bound', 'closing', 'listening' ]
                 property var colors: [ 'red', 'blue', 'blue', 'green', 'black', 'red', 'black' ]
                 Layout.fillWidth: true
-                enabled: controller.connectionState == 0 || controller.connectionState == 3
-                text: connectionButton.actions[controller.connectionState]
-                onClicked: if (controller.connectionState == 0) {
-                               controller.connectToServer(defaults.host, defaults.port)
-                           } else if (controller.connectionState == 3) {
-                               controller.disconnectFromServer()
-                           }
+//                enabled: controller.connectionState == 0 || controller.connectionState == 3
+//                text: connectionButton.actions[controller.connectionState]
+//                onClicked: if (controller.connectionState == 0) {
+//                               controller.connectToServer(defaults.host, defaults.port)
+//                           } else if (controller.connectionState == 3) {
+//                               controller.disconnectFromServer()
+//                           }
 
                 Item {
                     id: connectionStateIndicator
@@ -94,11 +94,11 @@ Window {
                     Rectangle {
                         anchors.fill: parent
                         z: 10
-                        color: connectionButton.colors[controller.connectionState]
+//                        color: connectionButton.colors[controller.connectionState]
                         radius: 10
     //                    border.width: 1
     //                    border.color: '#00000080'
-                        opacity: controller.connectionState === 2 ? 0 : 1
+//                        opacity: controller.connectionState === 2 ? 0 : 1
                         Behavior on opacity {
                             OpacityAnimator {
                                 duration: 250
@@ -109,7 +109,7 @@ Window {
                         id: busyIndicator1
                         anchors.fill: parent
 
-                        opacity: controller.connectionState === 2 ? 1 : 0
+//                        opacity: controller.connectionState === 2 ? 1 : 0
                         Behavior on opacity {
                             OpacityAnimator {
                                 duration: 250
@@ -178,7 +178,7 @@ Window {
                     anchors.left: connectionStateIndicator.right
                     anchors.margins: 10
                     color: 'gray'
-                    text: connectionButton.texts[controller.connectionState]
+//                    text: connectionButton.texts[controller.connectionState]
                 }
 
             }
@@ -189,8 +189,8 @@ Window {
                 radius: 4
                 height: 50
                 Label {
-                    color: controller.authorized ? 'geen' : 'red'
-                    text: controller.userId
+//                    color: controller.authorized ? 'geen' : 'red'
+//                    text: controller.userId
                     font.pixelSize: 30
                 }
             }
@@ -213,7 +213,7 @@ Window {
                     Layout.rightMargin: 20
                     Layout.fillWidth: true
                     onEditingFinished: {
-                        controller.sendHandshakeChallangeReply(text)
+//                        controller.sendHandshakeChallangeReply(text)
                         text = ''
                     }
                     RoundButton {
@@ -233,8 +233,8 @@ Window {
                 text: 'Change Device Certificate'
                 Layout.fillWidth: true
                 onClicked: {
-                    controller.changeDeviceCertificate()
-                    controller.connectToServer(defaults.host, defaults.port)
+//                    controller.changeDeviceCertificate()
+//                    controller.connectToServer(defaults.host, defaults.port)
                 }
             }
             ColumnLayout {
@@ -268,7 +268,7 @@ Window {
                                     if (p1.text.length < 3) {
                                         console.log('parsswords should be 3 symbols or more')
                                     } else {
-                                        controller.createNewUser(p1.text)
+//                                        controller.createNewUser(p1.text)
                                         newUserDialog.accept()
                                     }
                                 }
@@ -306,7 +306,7 @@ Window {
                             text: 'Request'
                             Layout.fillWidth: true
                             onClicked: {
-                                controller.addContact(Number(contactId.text))
+//                                controller.addContact(Number(contactId.text))
                                 addContact.accept()
                             }
                         }

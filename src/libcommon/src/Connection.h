@@ -2,6 +2,7 @@
 
 #include "libcommon_export.h"
 #include "types.h"
+#include "Request/RequestBase.h"
 
 #include <QSslSocket>
 
@@ -14,10 +15,10 @@ public:
     ~Connection() override;
 
 public slots:
-    void send(const QByteArray& payload);
+    void send(request::RequestBasePtr request);
 
 signals:
-    void packetRecieved(QByteArray);
+    void requestRecieved(request::RequestType::Type, QByteArray);
 
 private slots:
     void onAboutToClose();
@@ -49,6 +50,7 @@ private:
         Size payloadSize{ 0 };
         Version version{ 0 };
         Flags flags{ 0 };
+        request::RequestType::Type requestType{ 0 };
         Checksum checksum{ 0 };
         static constexpr Magic s_magic{ 0x4f3d3 };
         static constexpr Size s_maximumPayloadSize{ 2 * 1024 * 1024 }; // maximum 2 megabytes for now

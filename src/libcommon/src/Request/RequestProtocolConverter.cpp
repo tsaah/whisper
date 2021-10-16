@@ -2,26 +2,28 @@
 
 namespace whisper::common::request {
 
-RequestProtocolConverter::RequestProtocolConverter(const RequestFactoryPtr &requestFactory)
+RequestProtocolConverter::RequestProtocolConverter(const IRequestFactoryPtr &requestFactory)
     : IRequestProtocolConverter()
     , requestFactory_(requestFactory)
 {
 
 }
 
-RequestBasePtr RequestProtocolConverter::deserializeRequest(const QByteArray& data) const {
-    const auto requestType = RequestBase::prefetchRequestType(data);
+RequestBasePtr RequestProtocolConverter::deserializeRequest(request::RequestType::Type requestType,const QByteArray& data) const {
     if (requestType == RequestType::Unknown) {
         return {};
     }
-    return requestFactory_->create(requestType);
-}
 
-QByteArray RequestProtocolConverter::serializeRequest(const RequestBasePtr& request) const {
-    if (!request) {
+    auto request = requestFactory_->create(requestType);
+    if (request.isNull()) {
         return {};
     }
-    return request->serialize();
+
+    const auto deserializeResult = request->deserialize(data);
+    if (!deserializeResult) {
+        return {};
+    }
+    return request;
 }
 
 } // namespace whisper::common::request

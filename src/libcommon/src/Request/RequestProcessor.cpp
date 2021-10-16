@@ -10,30 +10,30 @@ RequestProcessor::RequestProcessor()
 }
 
 void RequestProcessor::processRequest(const RequestBasePtr& request) {
-    auto subProcessor = getSubProcessorForRequest(request->requestType());
-    if (subProcessor) {
-        subProcessor->processRequest(request);
+    auto subprocessor = getSubprocessorForRequest(request->requestType());
+    if (subprocessor) {
+        subprocessor->processRequest(request);
     }
 }
 
-void RequestProcessor::addSubProcessor(RequestType::Type requestType, const RequestSubProcessorPtr &subProcessor) {
-    subprocessorHash_.insert(requestType, subProcessor);
+void RequestProcessor::addSubprocessor(RequestType::Type requestType, const RequestSubprocessorPtr& subprocessor) {
+    subprocessorHash_.insert(requestType, subprocessor);
 }
 
-void RequestProcessor::removeSubProcessor(RequestType::Type requestType) {
+void RequestProcessor::removeSubprocessor(RequestType::Type requestType) {
     subprocessorHash_.remove(requestType);
 }
 
-void RequestProcessor::removeAllSubProcessors() {
+void RequestProcessor::removeAllSubprocessors() {
     subprocessorHash_.clear();
 }
 
-RequestSubProcessorPtr RequestProcessor::getSubProcessorForRequest(RequestType::Type requestType) const {
-    auto subProcessor = subprocessorHash_.value(requestType);
-    if (!subProcessor) {
+RequestSubprocessorPtr RequestProcessor::getSubprocessorForRequest(RequestType::Type requestType) const {
+    auto subprocessor = subprocessorHash_.value(requestType);
+    if (!subprocessor) {
         wWarn << "We cannot handle that request type at the moment" << requestType;
     }
-    return subProcessor;
+    return subprocessor;
 }
 
 } // namespace whisper::common::request

@@ -12,8 +12,7 @@ public:
     IRequestProtocolConverter() = default;
     virtual ~IRequestProtocolConverter() = default;
 
-    virtual RequestBasePtr deserializeRequest(const QByteArray& data) const = 0;
-    virtual QByteArray serializeRequest(const RequestBasePtr& request) const = 0;
+    virtual RequestBasePtr deserializeRequest(request::RequestType::Type requestType, const QByteArray& data) const = 0;
 };
 
 using RequestProtocolConverterPtr = QSharedPointer<IRequestProtocolConverter>;

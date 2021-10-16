@@ -8,13 +8,12 @@ namespace whisper::common::request {
 class RequestProtocolConverter final: public IRequestProtocolConverter {
     Q_DISABLE_COPY(RequestProtocolConverter)
 public:
-    RequestProtocolConverter(const RequestFactoryPtr& requestFactory);
+    RequestProtocolConverter(const IRequestFactoryPtr& requestFactory);
 
-    RequestBasePtr deserializeRequest(const QByteArray& data) const override;
-    QByteArray serializeRequest(const RequestBasePtr& request) const override;
+    RequestBasePtr deserializeRequest(RequestType::Type requestType, const QByteArray& data) const override;
 
 private:
-    RequestFactoryPtr requestFactory_;
+    IRequestFactoryPtr requestFactory_;
 };
 
 } // namespace whisper::common::request

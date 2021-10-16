@@ -13,24 +13,7 @@ bool RequestBase::deserialize(const QByteArray& byteArray) {
     QDataStream stream(byteArray);
     stream.setVersion(QDataStream::Qt_5_15); // TODO: grab it from settings or other global source
 
-    auto type = RequestType::Unknown;
-    stream >> type;
-    if (type != requestType()) {
-        return false;
-    }
-
     return deserializeSpecific(stream);
-}
-
-RequestType::Type RequestBase::prefetchRequestType(const QByteArray &byteArray)
-{
-    QDataStream stream(byteArray);
-    stream.setVersion(QDataStream::Qt_5_15); // TODO: grab it from settings or other global source
-
-    auto type = RequestType::Unknown;
-    stream >> type;
-
-    return type;
 }
 
 QByteArray RequestBase::serialize() const
@@ -42,8 +25,6 @@ QByteArray RequestBase::serialize() const
     QByteArray result;
     QDataStream stream(&result, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_5_15); // TODO: grab it from settings or other global source
-
-    stream << requestType_;
 
     if (!serializeSpecific(stream)) {
         return {};

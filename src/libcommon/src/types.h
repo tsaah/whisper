@@ -24,6 +24,7 @@ using Size = i64;
 using CommandId = u64;
 using Version = u16;
 using Flags = u32;
+using RequestTypeId = u32;
 using Checksum = u16;
 
 } // namespace whisper
